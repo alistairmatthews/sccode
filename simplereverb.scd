@@ -29,6 +29,27 @@ SynthDef("reverbstompbox", {
 }).add;
 )
 
+// GUI using a grid layout
+(
+//TO DO: tie these to the arguments on reverbstompbox
+w = Window.new("Reverb Stomp Box").layout_(
+	GridLayout.rows(
+		[
+			StaticText().string_("Mix:"),
+			~sMix = Slider().orientation_(\horizontal)
+		],
+		[
+			StaticText().string_("Room size:"),
+			~sRoom = Slider().orientation_(\horizontal)
+		],
+		[
+			StaticText().string_("HF Dampening:"),
+			~sDamp = Slider().orientation_(\horizontal)
+		]
+	)
+).front;
+)
+
 
 //Run the stompbox.
 //For many soundcards, the first two buses will be outputs. Try the third one.

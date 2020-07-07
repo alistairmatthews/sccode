@@ -22,4 +22,6 @@ Each instrument, effects, loop, and control object should be a class so it can b
 
 ## Tasks
 
-1. 
+1. Build a simple reverb effect with:
+  - A user interface to adjust parameters
+  - midi control
