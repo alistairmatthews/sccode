@@ -149,6 +149,11 @@ Synth(\micListener, [\in, 0, \out, ~micBus], ~micGroup);
 Synth(\pointer, [\buf, b, \out, ~ptrBus], ~pointerGroup);
 //Create the sounde recorder synth
 Synth(\soundRecorder, [\ptrIn, ~ptrBus, \micIn, ~micBus, \buf, b], ~recGroup);
+)
+
+(
+//This demo uses a single granulator
+b.zero;
 //Create the granulator synth
 ~g = Synth(\granulator, [
 	\amp, 0.5,
@@ -162,15 +167,46 @@ Synth(\soundRecorder, [\ptrIn, ~ptrBus, \micIn, ~micBus, \buf, b], ~recGroup);
 	\baseDur, 0.05,
 	\durRand, 1,
 	\rate, 2,
-	\rateRand, 1,
+	\rateRand, 2.midiratio,
 	\pan, 0,
-	\panRand, 0,
+	\panRand, 0.5,
 	\grainEnv, -1,
 	\ptrBus, ~ptrBus,
-	\ptrSampleDelay, 2000,
-	\ptrRandSamples, 5000,
+	\ptrSampleDelay, s.sampleRate/3,
+	\ptrRandSamples, s.sampleRate/6,
 	\minPtrDelay, 1000,
 ], ~grainGroup);
 )
-
+~g.set(\gate, 0);
 b.plot;
+
+(
+//This demo uses an array of granulators to create a cloud of grains
+b.zero;
+~h = 50.collect({
+	arg n;
+	Synth(\granulator, [
+		\amp, n.linlin(0, 49, -3, -20).dbamp, //This means the grains appear to fade out because the later playback granulators have a lower amplitude
+		\buf, b,
+		\out, 0,
+		\atk, 1,
+		\rel, 1,
+		\gate, 1,
+		\sync, 1,
+		\dens, 40,
+		\baseDur, 0.05,
+		\durRand, 1,
+		\rate, 0.5,
+		\rateRand, 2.midiratio,
+		\pan, 0,
+		\panRand, 0.5,
+		\grainEnv, -1,
+		\ptrBus, ~ptrBus,
+		\ptrSampleDelay, n.linlin(0, 49, 20000, s.sampleRate * 4), //Distribute the playback heads across the last 2 seconds of recording
+		\ptrRandSamples, 10000,
+		\minPtrDelay, 1000,
+	], ~grainGroup);
+});
+)
+~h.do({ arg n; n.set(\gate, 0)});
+

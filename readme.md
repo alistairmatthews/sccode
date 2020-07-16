@@ -18,10 +18,15 @@ aj's Supercollider code repo
 - Patches
   - Each patch is a combination of all the above.
 
-Each instrument, effects, loop, and control object should be a class so it can be re-used in more than one patch.
+Each instrument, effects, loop, and control object should be a class (and maybe a quark) so it can be re-used in more than one patch.
 
 ## Tasks
 
 1. Build a simple reverb effect with:
-  - A user interface to adjust parameters
-  - midi control
+
+    - A user interface to adjust parameters ~ Done!
+    - midi control
+
+1. Build a granulator stompbox from the demo
+1. Work out which code can be reused and create classes and a quark?
+1. etc...
