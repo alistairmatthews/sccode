@@ -167,7 +167,7 @@ b.zero;
 	\baseDur, 0.05,
 	\durRand, 1,
 	\rate, 2,
-	\rateRand, 2.midiratio,
+	\rateRand, 0,
 	\pan, 0,
 	\panRand, 0.5,
 	\grainEnv, -1,
@@ -183,7 +183,7 @@ b.plot;
 (
 //This demo uses an array of granulators to create a cloud of grains
 b.zero;
-~h = 50.collect({
+~h = 20.collect({
 	arg n;
 	Synth(\granulator, [
 		\amp, n.linlin(0, 49, -3, -20).dbamp, //This means the grains appear to fade out because the later playback granulators have a lower amplitude
@@ -196,8 +196,8 @@ b.zero;
 		\dens, 40,
 		\baseDur, 0.05,
 		\durRand, 1,
-		\rate, 0.5,
-		\rateRand, 2.midiratio,
+		\rate, 2,
+		\rateRand, 0,
 		\pan, 0,
 		\panRand, 0.5,
 		\grainEnv, -1,

@@ -11,9 +11,6 @@ Server.default.reboot;
 // For the focusrite 2i4 there are 4 outputs (0 - 3) so the first input is 4 right?
 // Does SC always create 2 outputs by default? That's not a bad thing of course.
 
-//TODO: how to close the synth and everything when the window is closed?
-
-
 (
 // Connect to MIDI devices.
 MIDIClient.init;
@@ -60,7 +57,6 @@ MIDIIn.connectAll;
 	.thumbSize_(40)
 	.action_({
 		arg slider;
-		slider.value.postln; //Lose this line?
 		model.source = slider.value;
 	})
 	.value_(model.source);
@@ -90,8 +86,7 @@ MIDIdef.program(\programMessageReceiver, {
 	)
 });
 
-
-// //Control change messages are when I alter a continuous pedal on the FCB1010
+//Control change messages are when I alter a continuous pedal on the FCB1010
 MIDIdef.cc(\ccMessageReceiver, {
  	arg val, num, chan, src;
 	if(
@@ -106,7 +101,6 @@ MIDIdef.cc(\ccMessageReceiver, {
 
 SynthDef(\reverbstompbox, {
 	arg outBus = 0, inBus = 2;
-	//TODO: how to not hardcode the busses?
 	var input, sig;
 
 	//Get the input from the specified bus, mono
@@ -153,5 +147,8 @@ w = Window.new("Reverb Stomp Box").layout_(
 		]
 	)
 ).front.alwaysOnTop_(true);
+w.onClose = {
+	x.free(0.5); //Fade out the synth when the Window is closed
+};
 )
 
