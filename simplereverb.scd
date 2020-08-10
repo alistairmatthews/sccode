@@ -100,11 +100,11 @@ MIDIdef.cc(\ccMessageReceiver, {
 //o = OSCFunc({ |msg| msg.postln }, '/tr', s.addr);
 
 SynthDef(\reverbstompbox, {
-	arg outBus = 0, inBus = 2;
+	arg outBus = 0, inBus = 0;
 	var input, sig;
 
 	//Get the input from the specified bus, mono
-	input = In.ar(inBus, 1);
+	input = SoundIn.ar(inBus, 1);
 
 	// This line is to send stuff to o for troubleshooting
 	//SendTrig.kr(Impulse.kr(4), 0, ~modRoom.kr(1));

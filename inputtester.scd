@@ -13,10 +13,11 @@ s.meter;
 
 //Set up the buses
 (
+Buffer.freeAll;
 ~b0 = Buffer.alloc(s, s.sampleRate * 1, 1);
-~b0 = Buffer.alloc(s, s.sampleRate * 1, 1);
-~b0 = Buffer.alloc(s, s.sampleRate * 1, 1);
-~b0 = Buffer.alloc(s, s.sampleRate * 1, 1);
+~b1 = Buffer.alloc(s, s.sampleRate * 1, 1);
+~b2 = Buffer.alloc(s, s.sampleRate * 1, 1);
+~b3 = Buffer.alloc(s, s.sampleRate * 1, 1);
 )
 
 //Record some sound into a buffer

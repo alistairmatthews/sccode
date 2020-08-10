@@ -36,6 +36,9 @@ SynthDef.new(\micListener, {
 	arg in = 0, out = 0, amp = 1;
 	var sig;
 	//Listen to the input and apply the amplitude
+	//Note: SoundIn is like In, except 0 is always the first input
+	//bus on your soundcard. For In, the first input bus depends on
+	//the number of output busses.
 	sig = SoundIn.ar(in) * amp;
 	Out.ar(out, sig);
 }).add;
@@ -147,7 +150,7 @@ SynthDef.new(\granulator, {
 Synth(\micListener, [\in, 0, \out, ~micBus], ~micGroup);
 //Create the pointer synth
 Synth(\pointer, [\buf, b, \out, ~ptrBus], ~pointerGroup);
-//Create the sounde recorder synth
+//Create the sound recorder synth
 Synth(\soundRecorder, [\ptrIn, ~ptrBus, \micIn, ~micBus, \buf, b], ~recGroup);
 )
 
