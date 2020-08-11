@@ -1,6 +1,7 @@
 //Select the ASIO driver when you boot the server?
 //Otherwise the MME driver is selected and latency is too slow.
 
+//Only execute this block on Windows
 (
 o = Server.default.options;
 o.device = "ASIO : Focusrite USB ASIO";

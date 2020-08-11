@@ -1,3 +1,5 @@
+//This is based on Eli Fieldsteels tutorial:
+//https://www.youtube.com/watch?v=MnD8stNB5tE&list=PLPYzvS8A_rTaNDweXe6PX4CXSGq4iEWYC&index=27
 
 //display the meter
 s.meter;
@@ -6,7 +8,7 @@ s.meter;
 //1. Experiment with guitar sounds
 //2. Build a UI
 //3. Add MIDI pedal support
-//4. Move resuable bits into classes or quarks
+//4. Move reusable bits into classes or quarks
 
 (
 
