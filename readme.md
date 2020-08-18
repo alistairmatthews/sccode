@@ -25,8 +25,17 @@ Each instrument, effects, loop, and control object should be a class (and maybe 
 1. Build a simple reverb effect with:
 
     - A user interface to adjust parameters ~ Done!
-    - midi control
+    - midi control ~ Done!
 
 1. Build a granulator stompbox from the demo
+
+    - Sound code - Done!
+    - Build a UI
+    - Midi control
+
 1. Work out which code can be reused and create classes and a quark?
+
+    - Class to create MVC views and controllers that go with a model. Done!
+    - Class to generalize MIDI control?
+
 1. etc...

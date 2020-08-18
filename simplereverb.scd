@@ -1,13 +1,3 @@
-//Select the ASIO driver when you boot the server?
-//Otherwise the MME driver is selected and latency is too slow.
-
-//Only execute this block on Windows
-(
-o = Server.default.options;
-o.device = "ASIO : Focusrite USB ASIO";
-Server.default.reboot;
-)
-
 // TODO: Find out why the first input is bus 2.
 // For the focusrite 2i4 there are 4 outputs (0 - 3) so the first input is 4 right?
 // Does SC always create 2 outputs by default? That's not a bad thing of course.
@@ -23,53 +13,8 @@ MIDIIn.connectAll;
 ~modRoom = NodeProxy.control(s, 1).source_(0.5);
 ~modDamp = NodeProxy.control(s, 1).source_(0.5);
 
-//MVC View creation functions
-~makeOnOffButtonView = {
-	arg model;
-	var view, controller;
-
-	view = Button()
-	.states_([
-		["Off", Color.black],
-		["On", Color.red]
-	])
-	.action_({
-		arg but;
-		model.source = but.value;
-	})
-	.value_(model.source);
-
-	//Create a controller for this view
-	controller = SimpleController(model).put(\source, {
-		arg obj, what, args;
-		defer { view.value = args[0] };
-	});
-
-	view.onClose = { controller.remove };
-};
-
-~makeSliderView = {
-	arg model;
-	var view, controller;
-
-	view = Slider()
-	.orientation_(\horizontal)
-	.background_(Color(1,0.5,0))
-	.thumbSize_(40)
-	.action_({
-		arg slider;
-		model.source = slider.value;
-	})
-	.value_(model.source);
-
-	//Create the controller for this view
-	controller = SimpleController(model).put(\source, {
-		arg obj, what, args;
-		defer { view.value = args[0] };
-	});
-
-	view.onClose = { controller.remove };
-};
+//This object contains the MVC View creation functions
+~viewMaker = AjmViewMaker.new;
 
 //Program messages are when I push a footswitch on the FCB1010
 MIDIdef.program(\programMessageReceiver, {
@@ -132,19 +77,19 @@ w = Window.new("Reverb Stomp Box").layout_(
 	GridLayout.rows(
 		[
 			StaticText().string_("On/Off"),
-			~bOnOff = ~makeOnOffButtonView.(~modOnOff);
+			~bOnOff = ~viewMaker.makeOnOffButtonView(~modOnOff);
 		],
 		[
 			StaticText().string_("Mix:"),
-			~sMix = ~makeSliderView.(~modMix);
+			~sMix = ~viewMaker.makeSliderView(~modMix);
 		],
 		[
 			StaticText().string_("Room size:"),
-			~sRoom = ~makeSliderView.(~modRoom);
+			~sRoom = ~viewMaker.makeSliderView(~modRoom);
 		],
 		[
 			StaticText().string_("HF Dampening:"),
-			~sDamp = ~makeSliderView.(~modDamp);
+			~sDamp = ~viewMaker.makeSliderView(~modDamp);
 		]
 	)
 ).front.alwaysOnTop_(true);
