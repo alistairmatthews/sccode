@@ -10,6 +10,11 @@ s.meter;
 //3. Add MIDI pedal support
 //4. Move reusable bits into classes or quarks. Done
 
+//UI:
+//a button/footswitch for in/out. This could either divert the in signal, or actually stop the granulator
+//a b/f for randomized grains
+//a radio button/3 footswitches for octave
+
 (
 
 //Set up the buffer to which sound is recorded
