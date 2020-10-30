@@ -46,7 +46,7 @@ s.waitForBoot({
 //Model properties
 ~revModel = Event.new;
 ~revModel.onOff = 0; //Reverb in/out
-~revModel.mix = 0.5; //Mix of effect
+~revModel.mix = 0.87; //Mix of effect
 ~revModel.room = 0.5; //Room size
 ~revModel.damp = 0.5; //HF damping
 ~revModel.revSynth = Synth(\reverbstompbox, [
@@ -59,6 +59,7 @@ s.waitForBoot({
 //Call this function to change any value in the model
 ~setValueFunction = {
 	arg key, value;
+	postln("setVF called!");
 	~revModel [key] = value;
 	~revModel.changed(key, value); //call changed to notify dependants of changes
 };
@@ -77,10 +78,10 @@ s.waitForBoot({
 	~setValueFunction.value(\onOff, view.value);
 });
 
-
+~ajmViewMaker = AjmViewMaker.new(~win, ~revModel);
 
 //Create the mix static text label
-AjmViewMaker.makeSliderGroup(\mix, ~revModel.mix, "Mix:", ~win, 60, 20, ~setValueFunction);
+~ajmViewMaker.makeSliderGroup(\mix, "Mix:", 60, 20);
 // ~labelMix = StaticText.new(~win, Rect(60, 20, 100, 20))
 // .string_("Mix:");
 // //Create the mix slider
