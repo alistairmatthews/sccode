@@ -2,6 +2,32 @@ AjmViewMaker {
 
 	//TODO: Implement custom colours as arguments
 
+
+	*makeSliderGroup {
+		arg prop, currentValue, label, window, left, top, setValueFunction;
+		var vwLabel, vwSlider, vwNumberbox;
+
+		//Create the static text label for the slider
+		vwLabel = StaticText.new(window, Rect(left, top, 100, 20)).string_(label);
+
+		//Create the slider
+		vwSlider = Slider.new(window, Rect(left + 100, top, 180, 20))
+		.value_(currentValue)
+		.action_({
+			arg view;
+		    setValueFunction.value(prop, view.value);
+		});//TODO: this is currently causing a doesn't understand error
+
+		//Create the number box
+		vwNumberbox = NumberBox.new(window, Rect(left + 300, top, 44, 20))
+		    .value_(currentValue);
+		//To do - how to make this read only?
+
+	}
+
+
+	//Old stuff. To delete.
+
 	//This creates a button view and a controller to go with a model
 	makeOnOffButtonView {
 		arg model;

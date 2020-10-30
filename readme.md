@@ -26,12 +26,14 @@ Each instrument, effects, loop, and control object should be a class (and maybe 
 
     - A user interface to adjust parameters ~ Done!
     - midi control ~ Done!
+    - Place all re-usable code into appropriate class defs - Started. 
 
 1. Build a granulator stompbox from the demo
 
     - Sound code - Done!
+    - Reuse classes from the simple reverb
     - Build a UI
-    - Midi control
+    - Midi control - Done|
 
 1. Work out which code can be reused and create classes and a quark?
 

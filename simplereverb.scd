@@ -77,23 +77,26 @@ s.waitForBoot({
 	~setValueFunction.value(\onOff, view.value);
 });
 
+
+
 //Create the mix static text label
-~labelMix = StaticText.new(~win, Rect(60, 20, 100, 20))
-.string_("Mix:");
-//Create the mix slider
-~slMix = Slider.new(~win, Rect(150, 20, 180, 20))
-.value_(~revModel.mix)
-.action_({
-	arg view;
-	~setValueFunction.value(\mix, view.value);
-});
-//Create the mix number box
-~nbMix = NumberBox.new(~win, Rect(340, 20, 44, 20))
-.value_(~revModel.mix)
-.action_({
-	arg view;
-	~setValueFunction.value(\mix, view.value);
-});
+AjmViewMaker.makeSliderGroup(\mix, ~revModel.mix, "Mix:", ~win, 60, 20, ~setValueFunction);
+// ~labelMix = StaticText.new(~win, Rect(60, 20, 100, 20))
+// .string_("Mix:");
+// //Create the mix slider
+// ~slMix = Slider.new(~win, Rect(150, 20, 180, 20))
+// .value_(~revModel.mix)
+// .action_({
+// 	arg view;
+// 	~setValueFunction.value(\mix, view.value);
+// });
+// //Create the mix number box
+// ~nbMix = NumberBox.new(~win, Rect(340, 20, 44, 20))
+// .value_(~revModel.mix)
+// .action_({
+// 	arg view;
+// 	~setValueFunction.value(\mix, view.value);
+// });
 
 //Create the room static text label
 ~labelRoom = StaticText.new(~win, Rect(60, 60, 100, 20))
