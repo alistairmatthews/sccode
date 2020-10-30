@@ -6,21 +6,30 @@ AjmViewMaker {
 	var <>window;
 	//The MVC model (an sc event)
 	var <>model;
-	//The dictionary of updateable controls
-	var dicControls;
+	//The dictionary of control groups
+	//Each group is all the controls for one property
+	var dicControlGroups;
 
 	*new {
 		arg win, mod;
-		//Create the dictionary of controls to update
-		dicControls = Dictionary.new();
-		//store the window and the model
-		^super.new.window_(win).model_(mod);
+		//call the superclass new, then this class's init
+		^super.new.init(win, mod);
 	}
 
+	init {
+		arg win, mod;
+		//Store the window and model
+		window = win;
+		model = mod;
+		//Create a dictionary of controls groups
+		dicControlGroups = Dictionary.new();
+	}
 
 	makeSliderGroup {
 		arg prop, label, left, top;
-		var vwLabel, vwSlider, vwNumberbox;
+		var vwLabel, vwSlider, vwNumberbox, arControls;
+
+		arControls = Array.new(maxSize: 2);
 
 		//Create the static text label for the slider
 		vwLabel = StaticText.new(window, Rect(left, top, 100, 20)).string_(label);
@@ -32,7 +41,7 @@ AjmViewMaker {
 			arg view;
 			~setValueFunction.value(model[prop], view.value);
 		}); //This works fine but the MVC controller doesn't set this slider or the number box
-		dicControls.put(prop + "Slider", vwSlider);
+		arControls.add(vwSlider);
 
 		//To fix this store all views in an array or something here
 		//Then create a method to update those views
@@ -42,17 +51,24 @@ AjmViewMaker {
 		vwNumberbox = NumberBox.new(window, Rect(left + 300, top, 44, 20))
 		.value_(model[prop]);
 		//To do - how to make this read only?
-		dicControls.put(prop + "Numberbox", vwNumberbox);
+		arControls.add(vwNumberbox);
+
+		//Add the group of controls to the dictionary
+		dicControlGroups.put(prop, arControls);
 
 	}
 
 
 	updateControls {
 		arg prop, newValue;
+		var controlGroup;
+		dicControlGroups keysDo: {| key, index | [key, index].postln};
+		controlGroup = dicControlGroups.at(prop);
+		controlGroup do: _.postln;
 		//Locate and set the slider
-		dicControls.at(prop + "Slider").value_(newValue);
+		controlGroup.at(0).value_(newValue);
 		//Locate and set the Number box
-		dicControls.at(prop + "Numberbox").value(newValue);
+		controlGroup.at(1).value_(newValue);
 	}
 
 	//Old stuff. To delete.

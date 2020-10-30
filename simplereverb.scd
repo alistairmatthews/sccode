@@ -59,7 +59,6 @@ s.waitForBoot({
 //Call this function to change any value in the model
 ~setValueFunction = {
 	arg key, value;
-	postln("setVF called!");
 	~revModel [key] = value;
 	~revModel.changed(key, value); //call changed to notify dependants of changes
 };
@@ -157,8 +156,10 @@ s.waitForBoot({
 		},
 		\mix, {
 			//update views
-			~nbMix.value_(val);
-			~slMix.value_(val);
+			//~nbMix.value_(val);
+			//~slMix.value_(val);
+			postln("Controller updating mix controls. Value:" + val);
+			~ajmViewMaker.updateControls(\mix, val);
 			//Set the mix level on the reverb
 			~revModel.revSynth.set(\mix, val);
 		},
@@ -214,6 +215,7 @@ MIDIdef.cc(\ccMessageReceiver, {
 			{ ~setValueFunction.value(\mix, val.linlin(1, 127, 0, 1)) },
 			{ ~setValueFunction.value(\room, val.linlin(1, 127, 0, 1)) } //All other cc messages set the room size
 		)
+
 	}
 });
 
@@ -222,6 +224,6 @@ MIDIdef.cc(\ccMessageReceiver, {
 //Test changes
 ~setValueFunction.value(\onOff, 0);
 ~setValueFunction.value(\onOff, 1);
-~setValueFunction.value(\mix, 0.25);
+~setValueFunction.value(\mix, 0.5);
 ~setValueFunction.value(\room, 0.25);
 ~setValueFunction.value(\damp, 0.25);
