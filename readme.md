@@ -39,3 +39,9 @@ Each instrument, effects, loop, and control object should be a class (and maybe 
     - Class to generalize MIDI control?
 
 1. etc...
+
+## General Supercollider facts
+
+I found that the package from the Ubuntu repos didn't include the emacs support. Instead follow the build and install notes here: 
+
+[Installing SuperCollider from source on Ubuntu](https://github.com/supercollider/supercollider/wiki/Installing-SuperCollider-from-source-on-Ubuntu)
