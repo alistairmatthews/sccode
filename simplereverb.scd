@@ -7,6 +7,7 @@
 //TODO: Midi control
 //TODO: fade out
 //TODO: OnOff is an in/out, so reverb dies away naturally
+//TODO: Order of boot is off so sometimes the synth node is not created right
 
 //Create the SynthDef, using FreeVerb
 // Post things from inside the Synth
@@ -57,6 +58,7 @@ s.waitForBoot({
 ]);
 
 //Call this function to change any value in the model
+//TODO: is this function better stored as part of the model?
 ~setValueFunction = {
 	arg key, value;
 	~revModel [key] = value;
@@ -66,9 +68,13 @@ s.waitForBoot({
 //MVC View
 
 //Create the window
-~win = Window.new("myWindow", Rect(100, 100, 400, 140));
+~win = Window.new("myWindow", Rect(100, 100, 420, 140));
+
+~ajmViewMaker = AjmViewMaker.new(~win, ~revModel);
 
 //Create the on/off button
+//TODO: create makeButton and updateButton methods in the view maker class
+//Then replace this with a call to them
 ~bOnOff = Button(~win, Rect(10, 10, 40, 40))
 .states_([["Off"], ["On"]])
 .value_(~revModel.onOff)
@@ -77,62 +83,14 @@ s.waitForBoot({
 	~setValueFunction.value(\onOff, view.value);
 });
 
-~ajmViewMaker = AjmViewMaker.new(~win, ~revModel);
-
 //Create the mix static text label
 ~ajmViewMaker.makeSliderGroup(\mix, "Mix:", 60, 20);
-// ~labelMix = StaticText.new(~win, Rect(60, 20, 100, 20))
-// .string_("Mix:");
-// //Create the mix slider
-// ~slMix = Slider.new(~win, Rect(150, 20, 180, 20))
-// .value_(~revModel.mix)
-// .action_({
-// 	arg view;
-// 	~setValueFunction.value(\mix, view.value);
-// });
-// //Create the mix number box
-// ~nbMix = NumberBox.new(~win, Rect(340, 20, 44, 20))
-// .value_(~revModel.mix)
-// .action_({
-// 	arg view;
-// 	~setValueFunction.value(\mix, view.value);
-// });
 
 //Create the room static text label
-~labelRoom = StaticText.new(~win, Rect(60, 60, 100, 20))
-.string_("Room:");
-//Create the room slider
-~slRoom = Slider.new(~win, Rect(150, 60, 180, 20))
-.value_(~revModel.room)
-.action_({
-	arg view;
-	~setValueFunction.value(\room, view.value);
-});
-//Create the room number box
-~nbRoom = NumberBox.new(~win, Rect(340, 60, 44, 20))
-.value_(~revModel.room)
-.action_({
-	arg view;
-	~setValueFunction.value(\room, view.value);
-});
+~ajmViewMaker.makeSliderGroup(\room, "Room:", 60, 60);
 
 //Create the HF Damping static text label
-~labelRoom = StaticText.new(~win, Rect(60, 100, 100, 20))
-.string_("HF Damping:");
-//Create the damp slider
-~slDamp = Slider.new(~win, Rect(150, 100, 180, 20))
-.value_(~revModel.damp)
-.action_({
-	arg view;
-	~setValueFunction.value(\damp, view.value);
-});
-//Create the damp number box
-~nbDamp = NumberBox.new(~win, Rect(340, 100, 44, 20))
-.value_(~revModel.damp)
-.action_({
-	arg view;
-	~setValueFunction.value(\damp, view.value);
-});
+~ajmViewMaker.makeSliderGroup(\damp, "HF Damping:", 60, 100);
 
 //Clean up when the window is closed
 ~win.onClose_({
@@ -149,6 +107,7 @@ s.waitForBoot({
 	switch (
 		what,
 		\onOff, {
+			//TODO: replace with a call to the update button method in the view maker
 			//update views
 			~bOnOff.value_(val);
 			//Turn on or off the reverb
@@ -156,24 +115,19 @@ s.waitForBoot({
 		},
 		\mix, {
 			//update views
-			//~nbMix.value_(val);
-			//~slMix.value_(val);
-			postln("Controller updating mix controls. Value:" + val);
-			~ajmViewMaker.updateControls(\mix, val);
+			~ajmViewMaker.updateSliderControls(\mix, val);
 			//Set the mix level on the reverb
 			~revModel.revSynth.set(\mix, val);
 		},
 		\room, {
 			//update views
-			~nbRoom.value_(val);
-			~slRoom.value_(val);
+			~ajmViewMaker.updateSliderControls(\room, val);
 			//Set the room size on the reverb
 			~revModel.revSynth.set(\room, val);
 		},
 		\damp, {
 			//update views
-			~nbDamp.value_(val);
-			~slDamp.value_(val);
+			~ajmViewMaker.updateSliderControls(\damp, val);
 			//Set the damping on the reverb
 			~revModel.revSynth.set(\damp, val);
 		},
