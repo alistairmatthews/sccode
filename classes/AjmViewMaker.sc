@@ -25,6 +25,27 @@ AjmViewMaker {
 		dicControlGroups = Dictionary.new();
 	}
 
+	makeButton {
+		arg prop, txtOn = "On", txtOff = "Off", left, top;
+		var vwButton, arControls;
+
+		arControls = Array.new(maxSize: 1);
+
+		//Create the button
+		vwButton = Button.new(window, Rect(left, top, 40, 40))
+		.states_([[txtOn], [txtOff]])
+		.value_(model[prop])
+		.action_({
+			arg view;
+			~setValueFunction.value(prop, view.value);
+		});
+
+		//Add the button to the array
+		arControls.add(vwButton);
+		//Store the array in the control groups
+		dicControlGroups.put(prop, arControls);
+	}
+
 	makeSliderGroup {
 		arg prop, label, left, top;
 		var vwLabel, vwSlider, vwNumberbox, arControls;
@@ -54,16 +75,16 @@ AjmViewMaker {
 
 	}
 
-	updateSliderControls {
+	updateControls {
 		arg prop, newValue;
 		var controlGroup;
 		//Get the right group of controls
 		controlGroup = dicControlGroups.at(prop);
-		//Set the slider
-		controlGroup.at(0).value_(newValue);
-		//Set the number box
-		controlGroup.at(1).value_(newValue);
+		//Update all the controls in the group
+		controlGroup.do({
+			arg control;
+			control.value_(newValue);
+		});
 	}
-
 
 }

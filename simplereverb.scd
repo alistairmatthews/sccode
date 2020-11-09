@@ -4,15 +4,17 @@
 
 (
 
-//TODO: Midi control
+//TODO: Put midi control into its own class for reuse?
 //TODO: fade out
 //TODO: OnOff is an in/out, so reverb dies away naturally
 //TODO: Order of boot is off so sometimes the synth node is not created right
 
-//Create the SynthDef, using FreeVerb
-// Post things from inside the Synth
-//o = OSCFunc({ |msg| msg.postln }, '/tr', s.addr);
 s.waitForBoot({
+
+	//Create the SynthDef, using FreeVerb
+	//This is for posting things from inside the Synth
+	//o = OSCFunc({ |msg| msg.postln }, '/tr', s.addr);
+
 	SynthDef(\reverbstompbox, {
 		arg outBus = 0,
 		inBus = 0,
@@ -40,137 +42,130 @@ s.waitForBoot({
 		//Output the reverb'ed signal to the specified bus
 		Out.ar(outBus, sig);
 	}).add;
-});
 
-//MVC Model
 
-//Model properties
-~revModel = Event.new;
-~revModel.onOff = 0; //Reverb in/out
-~revModel.mix = 0.87; //Mix of effect
-~revModel.room = 0.5; //Room size
-~revModel.damp = 0.5; //HF damping
-~revModel.revSynth = Synth(\reverbstompbox, [
-	\onOff, 0,
-	\mix, ~revModel.mix,
-	\room, ~revModel.room,
-	\damp, ~revModel.damp
-]);
+	//MVC Model
 
-//Call this function to change any value in the model
-//TODO: is this function better stored as part of the model?
-~setValueFunction = {
-	arg key, value;
-	~revModel [key] = value;
-	~revModel.changed(key, value); //call changed to notify dependants of changes
-};
+	//Model properties
+	~revModel = Event.new;
+	~revModel.onOff = 0; //Reverb in/out
+	~revModel.mix = 0.87; //Mix of effect
+	~revModel.room = 0.5; //Room size
+	~revModel.damp = 0.5; //HF damping
+	~revModel.revSynth = Synth(\reverbstompbox, [
+		\onOff, 0,
+		\mix, ~revModel.mix,
+		\room, ~revModel.room,
+		\damp, ~revModel.damp
+	]);
 
-//MVC View
+	//Call this function to change any value in the model
+	//TODO: is this function better stored as part of the model?
+	~setValueFunction = {
+		arg key, value;
+		~revModel [key] = value;
+		~revModel.changed(key, value); //call changed to notify dependants of changes
+	};
 
-//Create the window
-~win = Window.new("myWindow", Rect(100, 100, 420, 140));
+	//MVC View
 
-~ajmViewMaker = AjmViewMaker.new(~win, ~revModel);
+	//Create the window
+	~win = Window.new("myWindow", Rect(100, 100, 420, 140));
 
-//Create the on/off button
-//TODO: create makeButton and updateButton methods in the view maker class
-//Then replace this with a call to them
-~bOnOff = Button(~win, Rect(10, 10, 40, 40))
-.states_([["Off"], ["On"]])
-.value_(~revModel.onOff)
-.action_({
-	arg view;
-	~setValueFunction.value(\onOff, view.value);
-});
+	~ajmViewMaker = AjmViewMaker.new(~win, ~revModel);
 
-//Create the mix static text label
-~ajmViewMaker.makeSliderGroup(\mix, "Mix:", 60, 20);
+	//Create the on/off button
+	~ajmViewMaker.makeButton(\onOff, "On", "Off", 10, 10);
 
-//Create the room static text label
-~ajmViewMaker.makeSliderGroup(\room, "Room:", 60, 60);
+	//Create the mix static text label
+	~ajmViewMaker.makeSliderGroup(\mix, "Mix:", 60, 20);
 
-//Create the HF Damping static text label
-~ajmViewMaker.makeSliderGroup(\damp, "HF Damping:", 60, 100);
+	//Create the room static text label
+	~ajmViewMaker.makeSliderGroup(\room, "Room:", 60, 60);
 
-//Clean up when the window is closed
-~win.onClose_({
-	//remove the synth and the model dependency
-	~revModel.removeDependant(~revController);
-	~revModel.revSynth.free;
-	~revModel = nil;
-});
-~win.front;
+	//Create the HF Damping static text label
+	~ajmViewMaker.makeSliderGroup(\damp, "HF Damping:", 60, 100);
 
-//MVC Controller
-~revController = {
-	arg theChanger, what, val;
-	switch (
-		what,
-		\onOff, {
-			//TODO: replace with a call to the update button method in the view maker
-			//update views
-			~bOnOff.value_(val);
-			//Turn on or off the reverb
-			~revModel.revSynth.set(\onOff, val);
-		},
-		\mix, {
-			//update views
-			~ajmViewMaker.updateSliderControls(\mix, val);
-			//Set the mix level on the reverb
-			~revModel.revSynth.set(\mix, val);
-		},
-		\room, {
-			//update views
-			~ajmViewMaker.updateSliderControls(\room, val);
-			//Set the room size on the reverb
-			~revModel.revSynth.set(\room, val);
-		},
-		\damp, {
-			//update views
-			~ajmViewMaker.updateSliderControls(\damp, val);
-			//Set the damping on the reverb
-			~revModel.revSynth.set(\damp, val);
-		},
-	);
-};
-~revModel.addDependant(~revController);
+	//Clean up when the window is closed
+	~win.onClose_({
+		//remove the synth and the model dependency
+		~revModel.removeDependant(~revController);
+		~revModel.revSynth.free;
+		~revModel = nil;
+	});
+	~win.front;
 
-//MIDI Control
-MIDIClient.init;
-MIDIIn.connectAll;
+	//MVC Controller
+	~revController = {
+		arg theChanger, what, val;
+		switch (
+			what,
+			\onOff, {
+				//update views
+				~ajmViewMaker.updateControls(\onOff, val);
+				//Turn on or off the reverb
+				~revModel.revSynth.set(\onOff, val);
+			},
+			\mix, {
+				//update views
+				~ajmViewMaker.updateControls(\mix, val);
+				//Set the mix level on the reverb
+				~revModel.revSynth.set(\mix, val);
+			},
+			\room, {
+				//update views
+				~ajmViewMaker.updateControls(\room, val);
+				//Set the room size on the reverb
+				~revModel.revSynth.set(\room, val);
+			},
+			\damp, {
+				//update views
+				~ajmViewMaker.updateControls(\damp, val);
+				//Set the damping on the reverb
+				~revModel.revSynth.set(\damp, val);
+			},
+		);
+	};
+	~revModel.addDependant(~revController);
 
-//Program messages are when I push a footswitch on the FCB1010
-MIDIdef.program(\programMessageReceiver, {
-	arg val, chan, src;
-	if(
-		val == 0, //This responds only to switch 1 on the FCB1010
-		{
-			//the MIDI responder is in a different context to the main thread so you can't call ~setValueFunction
-			//We need to call ~setValueFunction separately from the MIDI responder
-			//To do that, use defer.
-			defer {
-				if
-				(
-					~revModel.onOff == 1,
-					{ ~setValueFunction.value(\onOff, 0) },
-					{ ~setValueFunction.value(\onOff, 1) }
-				)
-			}
-		}
-	)
-});
+	//MIDI Control
+	MIDIClient.init;
+	MIDIIn.connectAll;
 
-//Control change messages are when I alter a continuous pedal on the FCB1010
-MIDIdef.cc(\ccMessageReceiver, {
- 	arg val, num, chan, src;
-	defer {
+	//Program messages are when I push a footswitch on the FCB1010
+	MIDIdef.program(\programMessageReceiver, {
+		arg val, chan, src;
 		if(
-			chan == 1, //This will respond to the FCB1010 left exp pedal
-			{ ~setValueFunction.value(\mix, val.linlin(1, 127, 0, 1)) },
-			{ ~setValueFunction.value(\room, val.linlin(1, 127, 0, 1)) } //All other cc messages set the room size
+			val == 0, //This responds only to switch 1 on the FCB1010
+			{
+				//the MIDI responder is in a different context to the main thread so you can't call ~setValueFunction
+				//We need to call ~setValueFunction separately from the MIDI responder
+				//To do that, use defer.
+				defer {
+					if
+					(
+						~revModel.onOff == 1,
+						{ ~setValueFunction.value(\onOff, 0) },
+						{ ~setValueFunction.value(\onOff, 1) }
+					)
+				}
+			}
 		)
+	});
 
-	}
+	//Control change messages are when I alter a continuous pedal on the FCB1010
+	MIDIdef.cc(\ccMessageReceiver, {
+		arg val, num, chan, src;
+		defer {
+			if(
+				chan == 1, //This will respond to the FCB1010 left exp pedal
+				{ ~setValueFunction.value(\mix, val.linlin(1, 127, 0, 1)) },
+				{ ~setValueFunction.value(\room, val.linlin(1, 127, 0, 1)) } //All other cc messages set the room size
+			)
+
+		}
+	});
+
 });
 
 )
