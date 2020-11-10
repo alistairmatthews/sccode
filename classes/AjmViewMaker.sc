@@ -1,26 +1,27 @@
 AjmViewMaker {
 
-	//TODO: Implement custom colours as arguments
-
 	//The window where we'll create the controls
 	var <>window;
 	//The MVC model (an sc event)
 	var <>model;
+	//The highlight colour
+	var <>highlightColour;
 	//The dictionary of control groups
 	//Each group is all the controls for one property
 	var dicControlGroups;
 
 	*new {
-		arg win, mod;
+		arg win, mod, colour;
 		//call the superclass new, then this class's init
-		^super.new.init(win, mod);
+		^super.new.init(win, mod, colour);
 	}
 
 	init {
-		arg win, mod;
+		arg win, mod, colour;
 		//Store the window and model
 		window = win;
 		model = mod;
+		highlightColour = colour;
 		//Create a dictionary of controls groups
 		dicControlGroups = Dictionary.new();
 	}
@@ -29,11 +30,16 @@ AjmViewMaker {
 		arg prop, txtOn = "On", txtOff = "Off", left, top;
 		var vwButton, arControls;
 
-		arControls = Array.new(maxSize: 1);
+		//This is the array of controls to update when the value changes
+		//In this case it's one button
+		arControls = Array.new(maxSize: 0);
 
 		//Create the button
 		vwButton = Button.new(window, Rect(left, top, 40, 40))
-		.states_([[txtOn], [txtOff]])
+		.states_([
+			[txtOff, Color.black, Color.gray(0.4)],
+			[txtOn, Color.black, highlightColour]
+		])
 		.value_(model[prop])
 		.action_({
 			arg view;
@@ -48,15 +54,19 @@ AjmViewMaker {
 
 	makeSliderGroup {
 		arg prop, label, left, top;
-		var vwLabel, vwSlider, vwNumberbox, arControls;
+		var vwLabel, vwSlider, vwValueDisplay, vwNumberbox, arControls;
 
-		arControls = Array.new(maxSize: 2);
+		//This is the array of controls to update when the value changes
+		//A slider and a statictext
+		arControls = Array.new(maxSize: 1);
 
 		//Create the static text label for the slider
-		vwLabel = StaticText.new(window, Rect(left, top, 100, 20)).string_(label);
+		vwLabel = StaticText.new(window, Rect(left, top, 100, 20))
+		.string_(label);
 
 		//Create the slider
 		vwSlider = Slider.new(window, Rect(left + 100, top, 180, 20))
+		.background_(highlightColour)
 		.value_(model[prop])
 		.action_({
 			arg view;
@@ -64,11 +74,12 @@ AjmViewMaker {
 		});
 		arControls.add(vwSlider);
 
-		//Create the number box
-		vwNumberbox = NumberBox.new(window, Rect(left + 300, top, 44, 20))
-		.value_(model[prop]);
-		//To do - how to make this box read only?
-		arControls.add(vwNumberbox);
+		//Create the display box - it's a StaticText to stop the user from changing it
+		vwValueDisplay = StaticText.new(window, Rect(left + 300, top, 44, 20))
+		.string_(model[prop])
+		.stringColor_(Color.white)
+		.background_(Color.gray(0.2));
+		arControls.add(vwValueDisplay);
 
 		//Add the group of controls to the dictionary
 		dicControlGroups.put(prop, arControls);
@@ -83,7 +94,11 @@ AjmViewMaker {
 		//Update all the controls in the group
 		controlGroup.do({
 			arg control;
-			control.value_(newValue);
+			if (
+				control.isKindOf(StaticText),
+				{ control.string = newValue.round(0.01) },
+				{ control.value = newValue }
+			)
 		});
 	}
 

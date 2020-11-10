@@ -70,9 +70,9 @@ s.waitForBoot({
 	//MVC View
 
 	//Create the window
-	~win = Window.new("myWindow", Rect(100, 100, 420, 140));
+	~win = Window.new("FreeVerb", Rect(100, 100, 420, 140));
 
-	~ajmViewMaker = AjmViewMaker.new(~win, ~revModel);
+	~ajmViewMaker = AjmViewMaker.new(~win, ~revModel, Color.green(0.6));
 
 	//Create the on/off button
 	~ajmViewMaker.makeButton(\onOff, "On", "Off", 10, 10);
@@ -98,33 +98,8 @@ s.waitForBoot({
 	//MVC Controller
 	~revController = {
 		arg theChanger, what, val;
-		switch (
-			what,
-			\onOff, {
-				//update views
-				~ajmViewMaker.updateControls(\onOff, val);
-				//Turn on or off the reverb
-				~revModel.revSynth.set(\onOff, val);
-			},
-			\mix, {
-				//update views
-				~ajmViewMaker.updateControls(\mix, val);
-				//Set the mix level on the reverb
-				~revModel.revSynth.set(\mix, val);
-			},
-			\room, {
-				//update views
-				~ajmViewMaker.updateControls(\room, val);
-				//Set the room size on the reverb
-				~revModel.revSynth.set(\room, val);
-			},
-			\damp, {
-				//update views
-				~ajmViewMaker.updateControls(\damp, val);
-				//Set the damping on the reverb
-				~revModel.revSynth.set(\damp, val);
-			},
-		);
+		~ajmViewMaker.updateControls(what, val);
+		~revModel.revSynth.set(what, val);
 	};
 	~revModel.addDependant(~revController);
 
@@ -138,7 +113,8 @@ s.waitForBoot({
 		if(
 			val == 0, //This responds only to switch 1 on the FCB1010
 			{
-				//the MIDI responder is in a different context to the main thread so you can't call ~setValueFunction
+				//the MIDI responder is in a different context to the main thread
+				//so you can't call ~setValueFunction
 				//We need to call ~setValueFunction separately from the MIDI responder
 				//To do that, use defer.
 				defer {
