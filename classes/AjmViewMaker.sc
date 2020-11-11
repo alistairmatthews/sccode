@@ -1,5 +1,9 @@
 AjmViewMaker {
 
+	//This class creates groups of controls on the window passed into the new method
+	//for the model passed in to the new method. You can also pass a highlight colour
+	//to make things look themed.
+
 	//The window where we'll create the controls
 	var <>window;
 	//The MVC model (an sc event)

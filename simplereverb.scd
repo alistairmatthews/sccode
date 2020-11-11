@@ -4,10 +4,8 @@
 
 (
 
-//TODO: Put midi control into its own class for reuse?
 //TODO: fade out
 //TODO: OnOff is an in/out, so reverb dies away naturally
-//TODO: Order of boot is off so sometimes the synth node is not created right
 
 s.waitForBoot({
 
@@ -43,7 +41,6 @@ s.waitForBoot({
 		Out.ar(outBus, sig);
 	}).add;
 
-
 	//MVC Model
 
 	//Model properties
@@ -52,15 +49,8 @@ s.waitForBoot({
 	~revModel.mix = 0.87; //Mix of effect
 	~revModel.room = 0.5; //Room size
 	~revModel.damp = 0.5; //HF damping
-	~revModel.revSynth = Synth(\reverbstompbox, [
-		\onOff, 0,
-		\mix, ~revModel.mix,
-		\room, ~revModel.room,
-		\damp, ~revModel.damp
-	]);
 
 	//Call this function to change any value in the model
-	//TODO: is this function better stored as part of the model?
 	~setValueFunction = {
 		arg key, value;
 		~revModel [key] = value;
@@ -90,7 +80,7 @@ s.waitForBoot({
 	~win.onClose_({
 		//remove the synth and the model dependency
 		~revModel.removeDependant(~revController);
-		~revModel.revSynth.free;
+		~revSynth.free;
 		~revModel = nil;
 	});
 	~win.front;
@@ -99,48 +89,27 @@ s.waitForBoot({
 	~revController = {
 		arg theChanger, what, val;
 		~ajmViewMaker.updateControls(what, val);
-		~revModel.revSynth.set(what, val);
+		~revSynth.set(what, val);
 	};
 	~revModel.addDependant(~revController);
 
 	//MIDI Control
-	MIDIClient.init;
-	MIDIIn.connectAll;
+	~ajmMidiBinder = AjmMidiBinder.new(~revModel);
 
-	//Program messages are when I push a footswitch on the FCB1010
-	MIDIdef.program(\programMessageReceiver, {
-		arg val, chan, src;
-		if(
-			val == 0, //This responds only to switch 1 on the FCB1010
-			{
-				//the MIDI responder is in a different context to the main thread
-				//so you can't call ~setValueFunction
-				//We need to call ~setValueFunction separately from the MIDI responder
-				//To do that, use defer.
-				defer {
-					if
-					(
-						~revModel.onOff == 1,
-						{ ~setValueFunction.value(\onOff, 0) },
-						{ ~setValueFunction.value(\onOff, 1) }
-					)
-				}
-			}
-		)
-	});
+	//Bind footswitch 1 to the On/Off property of the model
+	~ajmMidiBinder.bindFootSwitch(0, \onOff);
 
-	//Control change messages are when I alter a continuous pedal on the FCB1010
-	MIDIdef.cc(\ccMessageReceiver, {
-		arg val, num, chan, src;
-		defer {
-			if(
-				chan == 1, //This will respond to the FCB1010 left exp pedal
-				{ ~setValueFunction.value(\mix, val.linlin(1, 127, 0, 1)) },
-				{ ~setValueFunction.value(\room, val.linlin(1, 127, 0, 1)) } //All other cc messages set the room size
-			)
+	//Bind expression pedal A to the Mix property of the model
+	//and pedal B to the Room property
+	~ajmMidiBinder.bindExpressionPedals(\mix, \room);
 
-		}
-	});
+	//Create the synth
+	~revSynth = Synth(\reverbstompbox, [
+		\onOff, 0,
+		\mix, ~revModel.mix,
+		\room, ~revModel.room,
+		\damp, ~revModel.damp
+	]);
 
 });
 
