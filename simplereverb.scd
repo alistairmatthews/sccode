@@ -4,14 +4,15 @@
 
 (
 
-//TODO: Midi control
 //TODO: fade out
 //TODO: OnOff is an in/out, so reverb dies away naturally
 
-//Create the SynthDef, using FreeVerb
-// Post things from inside the Synth
-//o = OSCFunc({ |msg| msg.postln }, '/tr', s.addr);
 s.waitForBoot({
+
+	//Create the SynthDef, using FreeVerb
+	//This is for posting things from inside the Synth
+	//o = OSCFunc({ |msg| msg.postln }, '/tr', s.addr);
+
 	SynthDef(\reverbstompbox, {
 		arg outBus = 0,
 		inBus = 0,
@@ -39,178 +40,77 @@ s.waitForBoot({
 		//Output the reverb'ed signal to the specified bus
 		Out.ar(outBus, sig);
 	}).add;
-});
 
-//MVC Model
+	//MVC Model
 
-//Model properties
-~revModel = Event.new;
-~revModel.onOff = 0; //Reverb in/out
-~revModel.mix = 0.5; //Mix of effect
-~revModel.room = 0.5; //Room size
-~revModel.damp = 0.5; //HF damping
-~revModel.revSynth = Synth(\reverbstompbox, [
-	\onOff, 0,
-	\mix, ~revModel.mix,
-	\room, ~revModel.room,
-	\damp, ~revModel.damp
-]);
+	//Model properties
+	~revModel = Event.new;
+	~revModel.onOff = 0; //Reverb in/out
+	~revModel.mix = 0.87; //Mix of effect
+	~revModel.room = 0.5; //Room size
+	~revModel.damp = 0.5; //HF damping
 
-//Call this function to change any value in the model
-~setValueFunction = {
-	arg key, value;
-	~revModel [key] = value;
-	~revModel.changed(key, value); //call changed to notify dependants of changes
-};
+	//Call this function to change any value in the model
+	~setValueFunction = {
+		arg key, value;
+		~revModel [key] = value;
+		~revModel.changed(key, value); //call changed to notify dependants of changes
+	};
 
-//MVC View
+	//MVC View
 
-//Create the window
-~win = Window.new("myWindow", Rect(100, 100, 400, 140));
+	//Create the window
+	~win = Window.new("FreeVerb", Rect(100, 100, 420, 140));
 
-//Create the on/off button
-~bOnOff = Button(~win, Rect(10, 10, 40, 40))
-.states_([["Off"], ["On"]])
-.value_(~revModel.onOff)
-.action_({
-	arg view;
-	~setValueFunction.value(\onOff, view.value);
-});
+	~ajmViewMaker = AjmViewMaker.new(~win, ~revModel, Color.green(0.6));
 
-//Create the mix static text label
-~labelMix = StaticText.new(~win, Rect(60, 20, 100, 20))
-.string_("Mix:");
-//Create the mix slider
-~slMix = Slider.new(~win, Rect(150, 20, 180, 20))
-.value_(~revModel.mix)
-.action_({
-	arg view;
-	~setValueFunction.value(\mix, view.value);
-});
-//Create the mix number box
-~nbMix = NumberBox.new(~win, Rect(340, 20, 44, 20))
-.value_(~revModel.mix)
-.action_({
-	arg view;
-	~setValueFunction.value(\mix, view.value);
-});
+	//Create the on/off button
+	~ajmViewMaker.makeButton(\onOff, "On", "Off", 10, 10);
 
-//Create the room static text label
-~labelRoom = StaticText.new(~win, Rect(60, 60, 100, 20))
-.string_("Room:");
-//Create the room slider
-~slRoom = Slider.new(~win, Rect(150, 60, 180, 20))
-.value_(~revModel.room)
-.action_({
-	arg view;
-	~setValueFunction.value(\room, view.value);
-});
-//Create the room number box
-~nbRoom = NumberBox.new(~win, Rect(340, 60, 44, 20))
-.value_(~revModel.room)
-.action_({
-	arg view;
-	~setValueFunction.value(\room, view.value);
-});
+	//Create the mix static text label
+	~ajmViewMaker.makeSliderGroup(\mix, "Mix:", 60, 20);
 
-//Create the HF Damping static text label
-~labelRoom = StaticText.new(~win, Rect(60, 100, 100, 20))
-.string_("HF Damping:");
-//Create the damp slider
-~slDamp = Slider.new(~win, Rect(150, 100, 180, 20))
-.value_(~revModel.damp)
-.action_({
-	arg view;
-	~setValueFunction.value(\damp, view.value);
-});
-//Create the damp number box
-~nbDamp = NumberBox.new(~win, Rect(340, 100, 44, 20))
-.value_(~revModel.damp)
-.action_({
-	arg view;
-	~setValueFunction.value(\damp, view.value);
-});
+	//Create the room static text label
+	~ajmViewMaker.makeSliderGroup(\room, "Room:", 60, 60);
 
-//Clean up when the window is closed
-~win.onClose_({
-	//remove the synth and the model dependency
-	~revModel.removeDependant(~revController);
-	~revModel.revSynth.free;
-	~revModel = nil;
-});
-~win.front;
+	//Create the HF Damping static text label
+	~ajmViewMaker.makeSliderGroup(\damp, "HF Damping:", 60, 100);
 
-//MVC Controller
-~revController = {
-	arg theChanger, what, val;
-	switch (
-		what,
-		\onOff, {
-			//update views
-			~bOnOff.value_(val);
-			//Turn on or off the reverb
-			~revModel.revSynth.set(\onOff, val);
-		},
-		\mix, {
-			//update views
-			~nbMix.value_(val);
-			~slMix.value_(val);
-			//Set the mix level on the reverb
-			~revModel.revSynth.set(\mix, val);
-		},
-		\room, {
-			//update views
-			~nbRoom.value_(val);
-			~slRoom.value_(val);
-			//Set the room size on the reverb
-			~revModel.revSynth.set(\room, val);
-		},
-		\damp, {
-			//update views
-			~nbDamp.value_(val);
-			~slDamp.value_(val);
-			//Set the damping on the reverb
-			~revModel.revSynth.set(\damp, val);
-		},
-	);
-};
-~revModel.addDependant(~revController);
+	//Clean up when the window is closed
+	~win.onClose_({
+		//remove the synth and the model dependency
+		~revModel.removeDependant(~revController);
+		~revSynth.free;
+		~revModel = nil;
+	});
+	~win.front;
 
-//MIDI Control
-MIDIClient.init;
-MIDIIn.connectAll;
+	//MVC Controller
+	~revController = {
+		arg theChanger, what, val;
+		~ajmViewMaker.updateControls(what, val);
+		~revSynth.set(what, val);
+	};
+	~revModel.addDependant(~revController);
 
-//Program messages are when I push a footswitch on the FCB1010
-MIDIdef.program(\programMessageReceiver, {
-	arg val, chan, src;
-	if(
-		val == 0, //This responds only to switch 1 on the FCB1010
-		{
-			//the MIDI responder is in a different context to the main thread so you can't call ~setValueFunction
-			//We need to call ~setValueFunction separately from the MIDI responder
-			//To do that, use defer.
-			defer {
-				if
-				(
-					~revModel.onOff == 1,
-					{ ~setValueFunction.value(\onOff, 0) },
-					{ ~setValueFunction.value(\onOff, 1) }
-				)
-			}
-		}
-	)
-});
+	//MIDI Control
+	~ajmMidiBinder = AjmMidiBinder.new(~revModel);
 
-//Control change messages are when I alter a continuous pedal on the FCB1010
-MIDIdef.cc(\ccMessageReceiver, {
- 	arg val, num, chan, src;
-	defer {
-		if(
-			chan == 1, //This will respond to the FCB1010 left exp pedal
-			{ ~setValueFunction.value(\mix, val.linlin(1, 127, 0, 1)) },
-			{ ~setValueFunction.value(\room, val.linlin(1, 127, 0, 1)) } //All other cc messages set the room size
-		)
-	}
+	//Bind footswitch 1 to the On/Off property of the model
+	~ajmMidiBinder.bindFootSwitch(0, \onOff);
+
+	//Bind expression pedal A to the Mix property of the model
+	//and pedal B to the Room property
+	~ajmMidiBinder.bindExpressionPedals(\mix, \room);
+
+	//Create the synth
+	~revSynth = Synth(\reverbstompbox, [
+		\onOff, 0,
+		\mix, ~revModel.mix,
+		\room, ~revModel.room,
+		\damp, ~revModel.damp
+	]);
+
 });
 
 )
@@ -218,6 +118,6 @@ MIDIdef.cc(\ccMessageReceiver, {
 //Test changes
 ~setValueFunction.value(\onOff, 0);
 ~setValueFunction.value(\onOff, 1);
-~setValueFunction.value(\mix, 0.25);
+~setValueFunction.value(\mix, 0.5);
 ~setValueFunction.value(\room, 0.25);
 ~setValueFunction.value(\damp, 0.25);
