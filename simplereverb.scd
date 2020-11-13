@@ -67,13 +67,13 @@ s.waitForBoot({
 	//Create the on/off button
 	~ajmViewMaker.makeButton(\onOff, "On", "Off", 10, 10);
 
-	//Create the mix static text label
+	//Create the mix slider group
 	~ajmViewMaker.makeSliderGroup(\mix, "Mix:", 60, 20);
 
-	//Create the room static text label
+	//Create the room slider group
 	~ajmViewMaker.makeSliderGroup(\room, "Room:", 60, 60);
 
-	//Create the HF Damping static text label
+	//Create the HF Damping slider group
 	~ajmViewMaker.makeSliderGroup(\damp, "HF Damping:", 60, 100);
 
 	//Clean up when the window is closed
