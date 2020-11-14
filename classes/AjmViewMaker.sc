@@ -57,32 +57,40 @@ AjmViewMaker {
 	}
 
 	makeSliderGroup {
-		arg prop, label, left, top;
-		var vwLabel, vwSlider, vwValueDisplay, vwNumberbox, arControls;
+		arg prop, label, left, top, min = 0, max = 1, warp = \lin;
+		var vwLabel, vwSlider, vwValueDisplay, vwNumberbox, arControls, ctlSpec;
 
-		//This is the array of controls to update when the value changes
-		//A slider and a statictext
-		arControls = Array.new(maxSize: 1);
+		//TODO: Make sure the slider is first in the control group array.
+		//when we update it we'll use the type of the control at 0 to
+		//work out what to do with it
 
 		//Create the static text label for the slider
 		vwLabel = StaticText.new(window, Rect(left, top, 100, 20))
 		.string_(label);
 
+		//Create the control spec to set min, max, and warp
+		ctlSpec = ControlSpec.new(min, max, warp);
+
 		//Create the slider
 		vwSlider = Slider.new(window, Rect(left + 100, top, 180, 20))
 		.background_(highlightColour)
-		.value_(model[prop])
+		.value_(ctlSpec.unmap(model[prop]))
 		.action_({
 			arg view;
-			~setValueFunction.value(prop, view.value);
+			~setValueFunction.value(prop, ctlSpec.map(view.value));
 		});
-		arControls.add(vwSlider);
 
 		//Create the display box - it's a StaticText to stop the user from changing it
 		vwValueDisplay = StaticText.new(window, Rect(left + 300, top, 44, 20))
 		.string_(model[prop])
 		.stringColor_(Color.white)
 		.background_(Color.gray(0.2));
+
+		//This is the array of controls we need when the value changes
+		//A slider, a controlspec, and a value display static text
+		arControls = Array.new(maxSize: 2);
+		arControls.add(vwSlider);
+		arControls.add(ctlSpec);
 		arControls.add(vwValueDisplay);
 
 		//Add the group of controls to the dictionary
@@ -95,15 +103,21 @@ AjmViewMaker {
 		var controlGroup;
 		//Get the right group of controls
 		controlGroup = dicControlGroups.at(prop);
-		//Update all the controls in the group
-		controlGroup.do({
-			arg control;
-			if (
-				control.isKindOf(StaticText),
-				{ control.string = newValue.round(0.01) },
-				{ control.value = newValue }
-			)
-		});
+		//How to update the group depends on what the first control is
+		if (
+			controlGroup.at(0).isKindOf(Button),
+			{
+				//Set the button value
+				controlGroup.at(0).value = newValue;
+			},
+			{
+				//It must be a slider group
+				//Set the slider value using the controlspec
+				controlGroup.at(0).value = controlGroup.at(1).unmap(newValue);
+				//Set the display static text
+				controlGroup.at(2).string = newValue.round(0.01);
+			}
+		);
 	}
 
 }

@@ -156,7 +156,7 @@ s.waitForBoot({
 	~ajmViewMaker.makeButton(\inOut, "In", "Out", 10, 10);
 
 	//Create the rate slider group
-	~ajmViewMaker.makeSliderGroup(\rate, "Rate:", 60, 20);
+	~ajmViewMaker.makeSliderGroup(\rate, "Rate:", 60, 20, 0.5, 4, \exp);
 
 	//Clean up when the window is closed
 	~win.onClose_({
