@@ -2,18 +2,16 @@
 //https://www.youtube.com/watch?v=MnD8stNB5tE&list=PLPYzvS8A_rTaNDweXe6PX4CXSGq4iEWYC&index=27
 
 //TODO:
-//0. Reuse AjmViewMaker and AjmMidiBinder
-//0.5 How to create slider groups with a range from 0.25 to 4 for the rate variable?
-// and also to make it exponential
-//1. Finish the UI.
-//2. Add MIDI pedal support.
+//0. Reuse AjmViewMaker (done)
+//1. Bind continuous values, such as rate, to footswitches on FCB1010. You'll have to change AjmMidiBinder
+//2. Add MIDI pedal support. Paritally done.
 //3. Work out how to distribute grains over 3 octaves.
 //4. Build a control to change the time period that grains are distributed over
 
 //UI:
-//a button/footswitch for in/out. This could either divert the in signal, or actually stop the granulator
-//a b/f for randomized grains. GUI done
-//a radio button/3 footswitches for octave
+//a button/footswitch for in/out. This diverts the in signal ~ granulator continues on empty buffer. Done
+//a slider group for grain rate. Done
+//a slider group for randomized grains. Done
 
 (
 
@@ -134,7 +132,7 @@ s.waitForBoot({
 	//MVC model
 	~granModel = Event.new;
 	~granModel.inOut = 0;
-	~granModel.randomOnOff = 0;
+	~granModel.rateRand = 0;
 	~granModel.rate = 1;
 
 	//Call this function to change any value in the model
@@ -146,7 +144,6 @@ s.waitForBoot({
 
 
 	//MVC View
-
 	//Create the window
 	~win = Window.new("Granulator", Rect(100, 100, 420, 140));
 
@@ -157,6 +154,9 @@ s.waitForBoot({
 
 	//Create the rate slider group
 	~ajmViewMaker.makeSliderGroup(\rate, "Rate:", 60, 20, 0.5, 4, \exp);
+
+	//Create the random rate slider group
+	~ajmViewMaker.makeSliderGroup(\rateRand, "Random:", 60, 60, 0.01, 100, \exp);
 
 	//Clean up when the window is closed
 	~win.onClose_({
@@ -181,65 +181,27 @@ s.waitForBoot({
 	~granController = {
 		arg theChanger, what, val;
 		~ajmViewMaker.updateControls(what, val);
-		postln(theChanger);
-		postln(what);
-		postln(val);
-		if (
-			what == \inOut,
-			{ ~micListener.set(\amp, val); },
-			{ ~g.do({ arg n; n.set(what, val)}); }
-		)
+		switch (what,
+			\inOut, {
+				//Set the listener to record or not
+				~micListener.set(\amp, val);
+			},
+			\rateRand, {
+				//Set the random rate on the granulator but remember to use midiratio
+				~g.do({ arg n; n.set(what, val.midiratio)});
+			},
+			{
+				//For all other properties, set the value on the granulator
+				~g.do({ arg n; n.set(what, val)}); }
+		);
 	};
 	~granModel.addDependant(~granController);
 
-	//Functions to change controls
-	// ~switchInOut = {
-	// 	if
-	// 	(
-	// 		~granModel.inOut == 1,
-	// 		{
-	// 			~granModel.inOut = 0;
-	// 			~micListener.set(\amp, 0);
-	// 			postln("Input bypassed");
-	// 		},
-	// 		{
-	// 			~granModel.inOut = 1;
-	// 			~micListener.set(\amp, 1);
-	// 			postln("Input switched in");
-	// 		}
-	// 	)
-	// };
-	//
-	// ~switchRandomOnOff = {
-	// 	if
-	// 	(
-	// 		~granModel.randomOnOff == 1,
-	// 		{
-	// 			~granModel.randomOnOff = 0;
-	// 			~g.do({ arg n; n.set(\rateRand, 0.0.midiratio)});
-	// 			postln("Random grain pitches: Off");
-	// 		},
-	// 		{
-	// 			~granModel.randomOnOff = 1;
-	// 			~g.do({ arg n; n.set(\rateRand, 100.0.midiratio)});
-	// 			postln("Random grain pitches: On");
-	// 		}
-	// 	)
-	// };
-	//
-	// ~changeGrainRate = {
-	// 	arg newRate;
-	// 	~granModel.rate = newRate;
-	// 	~g.do({ arg n; n.set(\rate, ~granModel.rate)});
-	// 	postln("Grain rate: " + ~granModel.rate);
-	// };
-
 	//Midi Control
-	// Connect to MIDI devices.
-	MIDIClient.init;
-	MIDIIn.connectAll;
+	~ajmMidiBinder = AjmMidiBinder.new(~granModel);
 
-
+	//Bind footswitch 1 to the In/Out property of the model
+	~ajmMidiBinder.bindFootSwitch(0, \inOut);
 
 	//Connect midi controls to functions
 	/*MIDIdef.program(\programMessageReceiver, {
@@ -263,8 +225,9 @@ s.waitForBoot({
 				~switchRandomOnOff.value;
 			}
 		);
-	});
-*/
+	});*/
+
+
 	//Set up the two audio buffers, four groups to order Synths correctly,
 	//plus the three utility synths (all except the granulator)
 	//Set up the audio buses for the mic and pointer
@@ -280,7 +243,7 @@ s.waitForBoot({
 	~grainGrp = Group.after(~recGrp);
 
 	//Now we can set up the synths, placing each into the right group
-	~micListener = Synth(\micListener, [\in, 0, \out, ~micBus], ~micGrp);
+	~micListener = Synth(\micListener, [\in, 0, \out, ~micBus, \amp, ~granModel.inOut], ~micGrp);
 	~pointer = Synth(\pointer, [\buf, b, \out, ~ptrBus], ~ptrGrp);
 	~recorder = Synth(\soundRecorder, [\ptrIn, ~ptrBus, \micIn, ~micBus, \buf, b], ~recGrp);
 
@@ -323,8 +286,8 @@ s.waitForBoot({
 			\dens, exprand(20, 40),
 			\baseDur, 0.08,
 			\durRand, 1.5,
-			\rate, 1,
-			\rateRand, 0.5.midiratio,
+			\rate, ~granModel.rate, //TODO: set this from the model
+			\rateRand, ~granModel.rateRand.midiratio,
 			\pan, 0,
 			\panRand, 0.5,
 			\grainEnv, -1,
@@ -342,19 +305,18 @@ s.waitForBoot({
 
 )
 
-
-~g.do({ arg n; n.set(\rateRand, 0.0.midiratio)});
-~g.do({ arg n; n.set(\rateRand, 0.5.midiratio)});
-~g.do({ arg n; n.set(\rateRand, 100.0.midiratio)});
-
-~g.do({ arg n; n.set(\rate, 0.5)});
-~g.do({ arg n; n.set(\rate, 1)});
-~g.do({ arg n; n.set(\rate, 2)});
-~g.do({ arg n; n.set(\rate, 4)});
-
-~g.do({ arg n; n.set(\sync, 0)});
-~g.do({ arg n; n.set(\sync, 1)});
-
+//Test In/Out
+~setValueFunction.value(\inOut, 0);
+~setValueFunction.value(\inOut, 1);
+//Test rate
+~setValueFunction.value(\rate, 0.5);
+~setValueFunction.value(\rate, 1);
+~setValueFunction.value(\rate, 2);
+~setValueFunction.value(\rate, 4);
+//Test random rate
+~setValueFunction.value(\rateRand, 0.01);
+~setValueFunction.value(\rateRand, 5);
+~setValueFunction.value(\rateRand, 100);
 
 //Stop the granulator by closing the gate
 ~g.do({ arg n; n.set(\gate, 0)});
