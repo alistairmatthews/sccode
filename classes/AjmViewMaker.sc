@@ -60,10 +60,6 @@ AjmViewMaker {
 		arg prop, label, left, top, min = 0, max = 1, warp = \lin;
 		var vwLabel, vwSlider, vwValueDisplay, vwNumberbox, arControls, ctlSpec;
 
-		//TODO: Make sure the slider is first in the control group array.
-		//when we update it we'll use the type of the control at 0 to
-		//work out what to do with it
-
 		//Create the static text label for the slider
 		vwLabel = StaticText.new(window, Rect(left, top, 100, 20))
 		.string_(label);
