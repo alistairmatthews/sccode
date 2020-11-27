@@ -6,7 +6,7 @@ AjmMidiBinder {
 	//The MVC model (an sc event)
 	var <>model;
 	//Create a list of receivers
-	var listReceivers;
+	var <listReceivers;
 
 	*new {
 		arg mod;

@@ -40,7 +40,7 @@ Each instrument, effects, loop, and control object should be a class (and maybe 
     - Class to create MVC views and controllers that go with a model. Done!
     - Class to generalize MIDI control? Done!
 
-1. Decide if test-driven development is possible or helpful
+1. Implement full test suite and stick to TDD principles
 
     - Note that a mocking framework may not be necessary because you're not using anything external to SC, such as databases.
 	- This doc has lots of techniques for testing in SC: [Comprehensive Guide to SuperCollider Unit Testing](https://gist.github.com/brianlheim/91222d487afa18582c287b0a722ae272)
