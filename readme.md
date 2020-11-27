@@ -58,3 +58,6 @@ I found that the package from the Ubuntu repos didn't include the emacs support.
 [Installing SuperCollider on Linux in 2019](https://lukaprincic.si/development-log/installing-supercollider-on-linux-in-2019)
 
 
+## My Test Suite
+
+- One test class for each working class
