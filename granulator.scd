@@ -157,8 +157,8 @@ s.waitForBoot({
 		~granModel.removeDependant(~granController);
 		//Stop the granulator by closing the gate
 		~g.do({ arg n; n.set(\gate, 0)});
-		//Remove the midi responders
-		~ajmMidiBinder.unbind;
+		//Remove the midi bindings
+		MIDIdef.freeAll;
 		//Free the other synths
 		~micListener.free;
 		~pointer.free;

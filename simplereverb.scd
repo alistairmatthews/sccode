@@ -78,6 +78,8 @@ s.waitForBoot({
 
 	//Clean up when the window is closed
 	~win.onClose_({
+		//Clean up MIDI binding
+		MIDIdef.freeAll;
 		//remove the synth and the model dependency
 		~revModel.removeDependant(~revController);
 		~revSynth.free;
