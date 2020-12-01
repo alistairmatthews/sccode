@@ -12,7 +12,7 @@ AjmViewMaker {
 	var <>highlightColour;
 	//The dictionary of control groups
 	//Each group is all the controls for one property
-	var dicControlGroups;
+	var <dicControlGroups;
 
 	*new {
 		arg win, mod, colour;
