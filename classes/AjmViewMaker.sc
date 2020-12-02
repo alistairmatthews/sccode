@@ -57,7 +57,7 @@ AjmViewMaker {
 	}
 
 	makeSliderGroup {
-		arg prop, label, left, top, min = 0, max = 1, warp = \lin;
+		arg prop, label, left = 20, top = 20, min = 0, max = 1, warp = \lin;
 		var vwLabel, vwSlider, vwValueDisplay, vwNumberbox, arControls, ctlSpec;
 
 		//Create the static text label for the slider

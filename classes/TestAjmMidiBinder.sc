@@ -12,6 +12,8 @@ TestAjmMidiBinder : UnitTest {
 	//the interpreter crashes but why?
 	//The tearDown appears to run and complete correctly
 	//Using assert instead of assertEquals didn't help
+	//The problem doesn't affect other test classes
+	//Doesn't that mean it's a problem with the Midi bit?
 
 	var testModel;
 	var ajmMidiBinder;

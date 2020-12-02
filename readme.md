@@ -45,7 +45,7 @@ Each instrument, effects, loop, and control object should be a class (and maybe 
     - Note that a mocking framework may not be necessary because you're not using anything external to SC, such as databases.
 	- This doc has lots of techniques for testing in SC: [Comprehensive Guide to SuperCollider Unit Testing](https://gist.github.com/brianlheim/91222d487afa18582c287b0a722ae272)
 	- Also see the UnitTest class: [UnitTest](http://doc.sccode.org/Classes/UnitTest.html)
-	- Why, in TestMidiBinder, can I only run one test at a time without crashing the interpreter?
+	- Why, in TestMidiBinder, can I only run one test at a time without crashing the interpreter? This seems to be a problem with the Midi bit, because it doesn't affect the ViewMaker tests.
 
 1. Create modules for input/output and routing
 1. etc...
