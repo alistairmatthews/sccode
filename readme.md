@@ -47,7 +47,18 @@ Each instrument, effects, loop, and control object should be a class (and maybe 
 	- Also see the UnitTest class: [UnitTest](http://doc.sccode.org/Classes/UnitTest.html)
 	- Why, in TestMidiBinder, can I only run one test at a time without crashing the interpreter? This seems to be a problem with the Midi bit, because it doesn't affect the ViewMaker tests.
 
-1. Create modules for input/output and routing
+1. Create modules for input/output
+
+	Input:
+	- GUI with stereo levels
+	- Output to buses
+	
+	Output:
+	- GUI with levels
+	- Output to stereo or mono
+	- Mix input
+	- Mix effects and instruments
+
 1. etc...
 
 ## General Supercollider facts
