@@ -4,7 +4,13 @@ aj's Supercollider code repo
 
 ## Approach
 
+- Signal controllers
+  - Input
+  - Ouput
+  - Mixer
 - Instruments
+  - Synths
+  - Sampler?
 - Effects
   - Each of these should be like a stomp box
 	- FreeVerb - Built
@@ -16,6 +22,10 @@ aj's Supercollider code repo
   - Use midi messages to switch from one loop to another
 - Patches
   - Each patch is a combination of all the above.
+  - One patch per song.
+  - Use buses to tie 'em together
+  - patch includes patterns for instruments
+  - patch includes midi pedal bindings
 
 Each instrument, effects, loop, and control object should be a class (and maybe a quark) so it can be re-used in more than one patch.
 
