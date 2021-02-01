@@ -4,16 +4,22 @@
 
 (
 
+//TODO: put this into a separate class for reuse in different patches
+//TODO: then this file just demos that class.
 //TODO: fade out
 //TODO: OnOff is an in/out, so reverb dies away naturally
 
 s.waitForBoot({
 
+	~ajmSimpleReverb = AjmSimpleReverb.new();
+
+	~ajmSimpleReverb.makeSynthDef();
+
 	//Create the SynthDef, using FreeVerb
 	//This is for posting things from inside the Synth
 	//o = OSCFunc({ |msg| msg.postln }, '/tr', s.addr);
 
-	SynthDef(\reverbstompbox, {
+	/*SynthDef(\reverbstompbox, {
 		arg outBus = 0,
 		inBus = 0,
 		onOff = 0,
@@ -39,18 +45,19 @@ s.waitForBoot({
 
 		//Output the reverb'ed signal to the specified bus
 		Out.ar(outBus, sig);
-	}).add;
+	}).add;*/
 
 	//MVC Model
 
 	//Model properties
-	~revModel = Event.new;
-	~revModel.onOff = 0; //Reverb in/out
+	~revModel = ~ajmSimpleReverb.revModel;
+	/*revModel.onOff = 0; //Reverb in/out
 	~revModel.mix = 0.87; //Mix of effect
 	~revModel.room = 0.5; //Room size
-	~revModel.damp = 0.5; //HF damping
+	~revModel.damp = 0.5; //HF damping*/
 
 	//Call this function to change any value in the model
+	//~setValueFunction = ~ajmSimpleReverb.setValueFunction;
 	~setValueFunction = {
 		arg key, value;
 		~revModel [key] = value;
@@ -58,9 +65,10 @@ s.waitForBoot({
 	};
 
 	//MVC View
+	~ajmSimpleReverb.makeGUI;
 
 	//Create the window
-	~win = Window.new("FreeVerb", Rect(100, 100, 420, 140));
+	/*~win = Window.new("FreeVerb", Rect(100, 100, 420, 140));
 
 	~ajmViewMaker = AjmViewMaker.new(~win, ~revModel, Color.green(0.6));
 
@@ -85,7 +93,7 @@ s.waitForBoot({
 		~revSynth.free;
 		~revModel = nil;
 	});
-	~win.front;
+	~win.front;*/
 
 	//MVC Controller
 	~revController = {

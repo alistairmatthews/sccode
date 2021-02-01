@@ -10,10 +10,10 @@ aj's Supercollider code repo
   - Mixer
 - Instruments
   - Synths
-  - Sampler?
+  - Samplers?
 - Effects
   - Each of these should be like a stomp box
-	- FreeVerb - Built
+    - FreeVerb - Built
     - Random delay
     - Granular delay - Built
 - Loops
@@ -25,9 +25,10 @@ aj's Supercollider code repo
   - One patch per song.
   - Use buses to tie 'em together
   - patch includes patterns for instruments
-  - patch includes midi pedal bindings
+  - midi pedal bindings for the loop
+  - midi pedal bindings for the stomp boxes and instruments are saved with the effect/instrument, not the patch!
 
-Each instrument, effects, loop, and control object should be a class (and maybe a quark) so it can be re-used in more than one patch.
+Each instrument, effects, loop, and control object should be a class so it can be re-used in more than one patch.
 
 ## Tasks
 
@@ -35,7 +36,8 @@ Each instrument, effects, loop, and control object should be a class (and maybe 
 
     - A user interface to adjust parameters ~ Done!
     - midi control ~ Done!
-    - Place all re-usable code into appropriate class defs ~ Done! 
+    - Place all re-usable code into appropriate class defs ~ Done!
+    - Place the effect itself in a class so it can be reused in different patches.
 
 1. Build a granulator stompbox from the demo
 
@@ -44,11 +46,7 @@ Each instrument, effects, loop, and control object should be a class (and maybe 
 	- Implement the MVC structure from the simple reverb - Done!
     - Build a UI - Done!
     - Midi control - Done!
-
-1. Work out which code can be reused and create classes and a quark?
-
-    - Class to create MVC views and controllers that go with a model. Done!
-    - Class to generalize MIDI control? Done!
+    - Place the effect itself in a class so it can be reused in different patches.
 
 1. Implement full test suite and stick to TDD principles
 
@@ -73,13 +71,8 @@ Each instrument, effects, loop, and control object should be a class (and maybe 
 
 ## General Supercollider facts
 
-I found that the package from the Ubuntu repos didn't include the emacs support. Instead follow the build and install notes here: 
+Installing from the Ubuntu packages for 20.04 worked perfectly and has a package for the emacs support.
 
 [Installing SuperCollider from source on Ubuntu](https://github.com/supercollider/supercollider/wiki/Installing-SuperCollider-from-source-on-Ubuntu)
 
 [Installing SuperCollider on Linux in 2019](https://lukaprincic.si/development-log/installing-supercollider-on-linux-in-2019)
-
-
-## My Test Suite
-
-- One test class for each working class
