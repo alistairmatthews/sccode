@@ -13,7 +13,7 @@ s.waitForBoot({
 
 	~ajmSimpleReverb = AjmSimpleReverb.new();
 
-	~ajmSimpleReverb.makeSynthDef();
+	//~ajmSimpleReverb.makeSynthDef();
 
 	//Create the SynthDef, using FreeVerb
 	//This is for posting things from inside the Synth
@@ -50,7 +50,7 @@ s.waitForBoot({
 	//MVC Model
 
 	//Model properties
-	~revModel = ~ajmSimpleReverb.revModel;
+	//~revModel = ~ajmSimpleReverb.revModel;
 	/*revModel.onOff = 0; //Reverb in/out
 	~revModel.mix = 0.87; //Mix of effect
 	~revModel.room = 0.5; //Room size
@@ -60,12 +60,13 @@ s.waitForBoot({
 	//~setValueFunction = ~ajmSimpleReverb.setValueFunction;
 	~setValueFunction = {
 		arg key, value;
-		~revModel [key] = value;
-		~revModel.changed(key, value); //call changed to notify dependants of changes
+		postln("in setValueFunction");
+		~ajmSimpleReverb.revModel [key] = value;
+		~ajmSimpleReverb.revModel.changed(key, value); //call changed to notify dependants of changes
 	};
 
 	//MVC View
-	~ajmSimpleReverb.makeGUI;
+	//~ajmSimpleReverb.makeGUI;
 
 	//Create the window
 	/*~win = Window.new("FreeVerb", Rect(100, 100, 420, 140));
@@ -98,13 +99,13 @@ s.waitForBoot({
 	//MVC Controller
 	~revController = {
 		arg theChanger, what, val;
-		~ajmViewMaker.updateControls(what, val);
-		~revSynth.set(what, val);
+		~ajmSimpleReverb.viewMaker.updateControls(what, val);
+		~ajmSimpleReverb.revSynth.set(what, val);
 	};
-	~revModel.addDependant(~revController);
+	~ajmSimpleReverb.revModel.addDependant(~revController);
 
 	//MIDI Control
-	~ajmMidiBinder = AjmMidiBinder.new(~revModel);
+	~ajmMidiBinder = AjmMidiBinder.new(~ajmSimpleReverb.revModel);
 
 	//Bind footswitch 1 to the On/Off property of the model
 	~ajmMidiBinder.bindFootSwitch(0, \onOff);
@@ -114,12 +115,13 @@ s.waitForBoot({
 	~ajmMidiBinder.bindExpressionPedals(\mix, \room);
 
 	//Create the synth
-	~revSynth = Synth(\reverbstompbox, [
+	~ajmSimpleReverb.makeSynth();
+	/*~revSynth = Synth(\reverbstompbox, [
 		\onOff, 0,
-		\mix, ~revModel.mix,
-		\room, ~revModel.room,
-		\damp, ~revModel.damp
-	]);
+		\mix, ~ajmSimpleReverb.revModel.mix,
+		\room, ~ajmSimpleReverb.revModel.room,
+		\damp, ~ajmSimpleReverb.revModel.damp
+	]);*/
 
 });
 
