@@ -30,14 +30,14 @@ AjmSimpleReverb {
 	//Call this function to change any value in the model
 	setValueFunction {
 		arg key, value;
-		postln("In setValueFunction wihtin the class");
+		postln("In setValueFunction wihtin the class. Key is " + key + "Value is" + value);
 		revModel [key] = value;
 		revModel.changed(key, value); //call changed to notify dependants of changes
 	}
 
-	controller {
+	blahcontroller {
 		arg theChanger, what, val;
-		//postln("In the controller in the class");
+		postln("In the controller in the class. theChanger: " + theChanger + "what: " + what + "val: " + val);
 		viewMaker.updateControls(what, val);
 		revSynth.set(what, val);
 	}
@@ -90,7 +90,8 @@ AjmSimpleReverb {
 		//Create the window
 		~win = Window.new("FreeVerb", Rect(100, 100, 420, 140));
 
-		viewMaker = AjmViewMaker.new(~win, revModel, Color.green(0.6));
+		//viewMaker = AjmViewMaker.new(~win, revModel, Color.green(0.6));
+		viewMaker = AjmViewMaker.new(~win, revModel, this, Color.green(0.6));
 
 		//Create the on/off button
 		viewMaker.makeButton(\onOff, "On", "Off", 10, 10);
@@ -109,7 +110,8 @@ AjmSimpleReverb {
 			//Clean up MIDI binding
 			MIDIdef.freeAll;
 			//remove the synth and the model dependency
-			revModel.removeDependant(~revController);
+			//revModel.removeDependant(~revController);
+			revModel.removeDependant(this.controller);
 			revSynth.free;
 			revModel = nil;
 		});

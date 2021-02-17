@@ -60,7 +60,7 @@ s.waitForBoot({
 	//~setValueFunction = ~ajmSimpleReverb.setValueFunction;
 	~setValueFunction = {
 		arg key, value;
-		postln("in setValueFunction");
+		postln("in ~setValueFunction outside the class. Key is " + key + "Value is" + value);
 		~ajmSimpleReverb.revModel [key] = value;
 		~ajmSimpleReverb.revModel.changed(key, value); //call changed to notify dependants of changes
 	};
@@ -99,10 +99,13 @@ s.waitForBoot({
 	//MVC Controller
 	~revController = {
 		arg theChanger, what, val;
+		postln("In ~revController. theChanger: " + theChanger + "what: " + what + "val: " + val);
 		~ajmSimpleReverb.viewMaker.updateControls(what, val);
 		~ajmSimpleReverb.revSynth.set(what, val);
 	};
 	~ajmSimpleReverb.revModel.addDependant(~revController);
+	//This line doesn't work and returns an error:
+	//~ajmSimpleReverb.revModel.addDependant(~ajmSimpleReverb.blahcontroller());
 
 	//MIDI Control
 	~ajmMidiBinder = AjmMidiBinder.new(~ajmSimpleReverb.revModel);
@@ -128,6 +131,7 @@ s.waitForBoot({
 )
 
 //Test changes
+~ajmSimpleReverb.setValueFunction(\onOff, 1);
 ~setValueFunction.value(\onOff, 0);
 ~setValueFunction.value(\onOff, 1);
 ~setValueFunction.value(\mix, 0.5);

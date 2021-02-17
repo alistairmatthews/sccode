@@ -8,6 +8,8 @@ AjmViewMaker {
 	var <>window;
 	//The MVC model (an sc event)
 	var <>model;
+	//The calling class
+	var <>caller;
 	//The highlight colour
 	var <>highlightColour;
 	//The dictionary of control groups
@@ -15,16 +17,20 @@ AjmViewMaker {
 	var <dicControlGroups;
 
 	*new {
-		arg win, mod, colour;
+		//arg win, mod, colour;
+		arg win, mod, call, colour;
 		//call the superclass new, then this class's init
-		^super.new.init(win, mod, colour);
+		//^super.new.init(win, mod, colour);
+		^super.new.init(win, mod, call, colour);
 	}
 
 	init {
-		arg win, mod, colour;
+		//arg win, mod, colour;
+		arg win, mod, call, colour;
 		//Store the window and model
 		window = win;
 		model = mod;
+		caller = call;
 		highlightColour = colour;
 		//Create a dictionary of controls groups
 		dicControlGroups = Dictionary.new();
@@ -47,6 +53,7 @@ AjmViewMaker {
 		.value_(model[prop])
 		.action_({
 			arg view;
+			postln("In makeButton. prop is " + prop + "value is " + view.value);
 			~setValueFunction.value(prop, view.value);
 		});
 
@@ -73,7 +80,7 @@ AjmViewMaker {
 		.value_(ctlSpec.unmap(model[prop]))
 		.action_({
 			arg view;
-			~setValueFunction.value(prop, ctlSpec.map(view.value));
+			caller.setValueFunction.value(prop, ctlSpec.map(view.value));
 		});
 
 		//Create the display box - it's a StaticText to stop the user from changing it

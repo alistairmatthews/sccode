@@ -38,6 +38,7 @@ Each instrument, effects, loop, and control object should be a class so it can b
     - midi control ~ Done!
     - Place all re-usable code into appropriate class defs ~ Done!
     - Place the effect itself in a class so it can be reused in different patches.
+	    - Currently doing this. The problem is that, when I move setValueFunction and the controller into the class, the call from AjmViewMaker loses the values.
 
 1. Build a granulator stompbox from the demo
 
