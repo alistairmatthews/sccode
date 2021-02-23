@@ -54,7 +54,8 @@ AjmViewMaker {
 		.action_({
 			arg view;
 			postln("In makeButton. prop is " + prop + "value is " + view.value);
-			~setValueFunction.value(prop, view.value);
+			caller.setValueFunction(prop, view.value);
+			//~setValueFunction.value(prop, view.value);
 		});
 
 		//Add the button to the array
@@ -80,7 +81,8 @@ AjmViewMaker {
 		.value_(ctlSpec.unmap(model[prop]))
 		.action_({
 			arg view;
-			caller.setValueFunction.value(prop, ctlSpec.map(view.value));
+			postln("In makeSliderGroup. prop is " + prop + "value is " + view.value);
+			caller.setValueFunction(prop, ctlSpec.map(view.value));
 		});
 
 		//Create the display box - it's a StaticText to stop the user from changing it
@@ -111,10 +113,12 @@ AjmViewMaker {
 			controlGroup.at(0).isKindOf(Button),
 			{
 				//Set the button value
+				postln("In updateControls. It's a button");
 				controlGroup.at(0).value = newValue;
 			},
 			{
 				//It must be a slider group
+				postln("In updateControls. It's a slider");
 				//Set the slider value using the controlspec
 				controlGroup.at(0).value = controlGroup.at(1).unmap(newValue);
 				//Set the display static text

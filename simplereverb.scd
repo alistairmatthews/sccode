@@ -58,12 +58,12 @@ s.waitForBoot({
 
 	//Call this function to change any value in the model
 	//~setValueFunction = ~ajmSimpleReverb.setValueFunction;
-	~setValueFunction = {
+	/*~setValueFunction = {
 		arg key, value;
 		postln("in ~setValueFunction outside the class. Key is " + key + "Value is" + value);
 		~ajmSimpleReverb.revModel [key] = value;
 		~ajmSimpleReverb.revModel.changed(key, value); //call changed to notify dependants of changes
-	};
+	};*/
 
 	//MVC View
 	//~ajmSimpleReverb.makeGUI;
@@ -132,8 +132,8 @@ s.waitForBoot({
 
 //Test changes
 ~ajmSimpleReverb.setValueFunction(\onOff, 1);
-~setValueFunction.value(\onOff, 0);
-~setValueFunction.value(\onOff, 1);
-~setValueFunction.value(\mix, 0.5);
-~setValueFunction.value(\room, 0.25);
-~setValueFunction.value(\damp, 0.25);
+~ajmSimpleReverb.setValueFunction(\onOff, 0);
+~ajmSimpleReverb.setValueFunction(\onOff, 1);
+~ajmSimpleReverb.setValueFunction(\mix, 0.5);
+~ajmSimpleReverb.setValueFunction(\room, 0.25);
+~ajmSimpleReverb.setValueFunction(\damp, 0.25);

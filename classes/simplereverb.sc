@@ -110,8 +110,8 @@ AjmSimpleReverb {
 			//Clean up MIDI binding
 			MIDIdef.freeAll;
 			//remove the synth and the model dependency
-			//revModel.removeDependant(~revController);
-			revModel.removeDependant(this.controller);
+			revModel.removeDependant(~revController);
+			//revModel.removeDependant(this.controller);
 			revSynth.free;
 			revModel = nil;
 		});
