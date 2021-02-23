@@ -5,11 +5,12 @@
 (
 
 //TODO: put this into a separate class for reuse in different patches
-//TODO: then this file just demos that class.
+//TODO: then this file just demos that class. Almost done. Just needs tidying!
 //TODO: fade out
 //TODO: OnOff is an in/out, so reverb dies away naturally
 
 s.waitForBoot({
+	var revController;
 
 	~ajmSimpleReverb = AjmSimpleReverb.new();
 
@@ -97,15 +98,16 @@ s.waitForBoot({
 	~win.front;*/
 
 	//MVC Controller
-	~revController = {
+	/*revController = {
 		arg theChanger, what, val;
-		postln("In ~revController. theChanger: " + theChanger + "what: " + what + "val: " + val);
+		postln("In revController outside the class. theChanger: " + theChanger + "what: " + what + "val: " + val);
 		~ajmSimpleReverb.viewMaker.updateControls(what, val);
 		~ajmSimpleReverb.revSynth.set(what, val);
 	};
-	~ajmSimpleReverb.revModel.addDependant(~revController);
+	~ajmSimpleReverb.revModel.addDependant(revController);*/
 	//This line doesn't work and returns an error:
-	//~ajmSimpleReverb.revModel.addDependant(~ajmSimpleReverb.blahcontroller());
+	//~ajmSimpleReverb.revModel.addDependant(revController);
+	//~ajmSimpleReverb.addTheDependant();
 
 	//MIDI Control
 	~ajmMidiBinder = AjmMidiBinder.new(~ajmSimpleReverb.revModel);

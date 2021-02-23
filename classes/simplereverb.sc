@@ -6,6 +6,8 @@ AjmSimpleReverb {
 	var <>viewMaker;
 	//The synth
 	var <>revSynth;
+	//The MVC controller
+	var revController;
 
 	*new {
 		//call the superclass new, then this class's init
@@ -24,7 +26,9 @@ AjmSimpleReverb {
 		//Make the GUI
 		this.makeGUI();
 		//Add the controller as a dependent of the model
-		//revModel.addDependant(this.controller);
+		//mvcController = this.controller();
+		//revModel.addDependant(this.controller());
+		this.addTheDependant();
 	}
 
 	//Call this function to change any value in the model
@@ -35,11 +39,24 @@ AjmSimpleReverb {
 		revModel.changed(key, value); //call changed to notify dependants of changes
 	}
 
-	blahcontroller {
+	//This is the MVC controller
+	/*controller {
 		arg theChanger, what, val;
 		postln("In the controller in the class. theChanger: " + theChanger + "what: " + what + "val: " + val);
 		viewMaker.updateControls(what, val);
 		revSynth.set(what, val);
+	}*/
+
+	//This method adds the controller as a dependant of the model
+	addTheDependant {
+		postln ("In addDependant in the class");
+		revController = {
+			arg theChanger, what, val;
+			postln("In the controller in the class. theChanger: " + theChanger + "what: " + what + "val: " + val);
+			viewMaker.updateControls(what, val);
+			revSynth.set(what, val);
+		};
+		revModel.addDependant(revController);
 	}
 
 	makeSynthDef {
@@ -110,7 +127,7 @@ AjmSimpleReverb {
 			//Clean up MIDI binding
 			MIDIdef.freeAll;
 			//remove the synth and the model dependency
-			revModel.removeDependant(~revController);
+			//revModel.removeDependant(revController);
 			//revModel.removeDependant(this.controller);
 			revSynth.free;
 			revModel = nil;

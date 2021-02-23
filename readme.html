@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>readme.html</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+
+</head>
+
+<body>
+
+<h1>sccode</h1>
+
+<p>aj's Supercollider code repo</p>
+
+<h2>Approach</h2>
+
+<ul>
+<li>Signal controllers
+<ul>
+<li>Input</li>
+<li>Ouput</li>
+<li>Mixer</li>
+</ul></li>
+<li>Instruments
+<ul>
+<li>Synths</li>
+<li>Samplers?</li>
+</ul></li>
+<li>Effects
+<ul>
+<li>Each of these should be like a stomp box</li>
+<li>FreeVerb - Built</li>
+<li>Random delay</li>
+<li>Granular delay - Built</li>
+</ul></li>
+<li>Loops
+<ul>
+<li>Each uses one or more instruments to play sounds</li>
+<li>Use patterns to make them interesting and with some randomness</li>
+<li>Use midi messages to switch from one loop to another</li>
+</ul></li>
+<li>Patches
+<ul>
+<li>Each patch is a combination of all the above.</li>
+<li>One patch per song.</li>
+<li>Use buses to tie 'em together</li>
+<li>patch includes patterns for instruments</li>
+<li>midi pedal bindings for the loop</li>
+<li>midi pedal bindings for the stomp boxes and instruments are saved with the effect/instrument, not the patch!</li>
+</ul></li>
+</ul>
+
+<p>Each instrument, effects, loop, and control object should be a class so it can be re-used in more than one patch.</p>
+
+<h2>Tasks</h2>
+
+<ol>
+<li><p>Build a simple reverb effect with:</p>
+
+<ul>
+<li>A user interface to adjust parameters ~ Done!</li>
+<li>midi control ~ Done!</li>
+<li>Place all re-usable code into appropriate class defs ~ Done!</li>
+<li>Place the effect itself in a class so it can be reused in different patches.
+<ul>
+<li>Currently doing this. Just needs tidying up and commenting on.</li>
+<li>Once that's done think about how to use busses - when we're reusing the simplereverb object in multiple patches, we'll have to pass it input and output busses to route signals.</li>
+</ul></li>
+</ul></li>
+<li><p>Build a granulator stompbox from the demo</p>
+
+<ul>
+<li>Sound code - Done!</li>
+<li>Reuse classes from the simple reverb - Done!</li>
+<li>Implement the MVC structure from the simple reverb - Done!</li>
+<li>Build a UI - Done!</li>
+<li>Midi control - Done!</li>
+<li>Place the effect itself in a class so it can be reused in different patches.</li>
+</ul></li>
+<li><p>Implement full test suite and stick to TDD principles</p>
+
+<ul>
+<li>Note that a mocking framework may not be necessary because you're not using anything external to SC, such as databases.</li>
+<li>This doc has lots of techniques for testing in SC: <a href="https://gist.github.com/brianlheim/91222d487afa18582c287b0a722ae272">Comprehensive Guide to SuperCollider Unit Testing</a></li>
+<li>Also see the UnitTest class: <a href="http://doc.sccode.org/Classes/UnitTest.html">UnitTest</a></li>
+<li>Why, in TestMidiBinder, can I only run one test at a time without crashing the interpreter? This seems to be a problem with the Midi bit, because it doesn't affect the ViewMaker tests.</li>
+</ul></li>
+<li><p>Create modules for input/output</p>
+
+<p>Input:</p>
+
+<ul>
+<li>GUI with stereo levels</li>
+<li>Output to buses</li>
+</ul>
+
+<p>Output:</p>
+
+<ul>
+<li>GUI with levels</li>
+<li>Output to stereo or mono</li>
+<li>Mix input</li>
+<li>Mix effects and instruments</li>
+</ul></li>
+<li><p>etc...</p></li>
+</ol>
+
+<h2>General Supercollider facts</h2>
+
+<p>Installing from the Ubuntu packages for 20.04 worked perfectly and has a package for the emacs support.</p>
+
+<p><a href="https://github.com/supercollider/supercollider/wiki/Installing-SuperCollider-from-source-on-Ubuntu">Installing SuperCollider from source on Ubuntu</a></p>
+
+<p><a href="https://lukaprincic.si/development-log/installing-supercollider-on-linux-in-2019">Installing SuperCollider on Linux in 2019</a></p>
+
+</body>
+</html>
