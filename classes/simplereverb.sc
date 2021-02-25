@@ -50,6 +50,11 @@ AjmSimpleReverb {
 	//This method adds the controller as a dependant of the model
 	addTheDependant {
 		postln ("In addDependant in the class");
+		//Note: I found that you can only add the controller
+		//as a dependant if you create it as a function, not as a
+		//method in this class. Otherwise, the controller is called
+		//when you add it as a dependant and that causes an error.
+		//It also doesn't seem to add correctly.
 		revController = {
 			arg theChanger, what, val;
 			postln("In the controller in the class. theChanger: " + theChanger + "what: " + what + "val: " + val);
