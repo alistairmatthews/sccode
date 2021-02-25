@@ -1,21 +1,21 @@
 AjmMidiBinder {
 
 	//This class binds footswitches and pedals on the FCB1010 to
-	//values on the MVC model that you pass to the new method
+	//values on the MVC model in the class that you pass to the new method
 
-	//The MVC model (an sc event)
-	var <>model;
+	//The object that we want to bind pedals to
+	var <>stompbox;
 
 	*new {
-		arg mod;
+		arg stomp;
 		//call the superclass new, then this class's init
-		^super.new.init(mod);
+		^super.new.init(stomp);
 	}
 
 	init {
-		arg mod;
+		arg stomp;
 		//Store the model
-		model = mod;
+		stompbox = stomp;
 		//Initiate midi control
 		MIDIClient.init;
 		MIDIIn.connectAll;
@@ -35,16 +35,16 @@ AjmMidiBinder {
 				MIDIdef.program(\footswitch ++ footSwitchNumber, {
 					arg val, chan, src;
 					//the MIDI responder is in a different context to the main thread
-					//so you can't call ~setValueFunction
-					//We need to call ~setValueFunction separately from the
+					//so you can't call stompbox.setValueFunction
+					//We need to call stompbox.setValueFunction separately from the
 					//MIDI responder. To do that, use defer.
 					defer {
 						postln("Toggling" + prop);
 						if
 						(
-							model[prop] == 1,
-							{ ~setValueFunction.value(prop, 0) },
-							{ ~setValueFunction.value(prop, 1) }
+							stompbox.model[prop] == 1,
+							{ stompbox.setValueFunction(prop, 0) },
+							{ stompbox.setValueFunction(prop, 1) }
 						);
 					}
 				}, 5, nil, footSwitchNumber);
@@ -58,12 +58,12 @@ AjmMidiBinder {
 				MIDIdef.program(\footswitch ++ footSwitchNumber, {
 					arg val, chan, src;
 					//the MIDI responder is in a different context to the main thread
-					//so you can't call ~setValueFunction
-					//We need to call ~setValueFunction separately from the
+					//so you can't call stompbox.setValueFunction
+					//We need to call stompbox.setValueFunction separately from the
 					//MIDI responder. To do that, use defer.
 					defer {
 						postln("Setting" + prop + "to" + bindVal);
-						~setValueFunction.value(prop, bindVal);
+						stompbox.setValueFunction(prop, bindVal);
 					}
 				}, 5, nil, footSwitchNumber);
 			}
@@ -81,8 +81,8 @@ AjmMidiBinder {
 			defer {
 				if(
 					chan == 1,
-					{ ~setValueFunction.value(pedalAProp, val.linlin(1, 127, 0, 1)) },
-					{ ~setValueFunction.value(pedalBProp, val.linlin(1, 127, 0, 1)) }
+					{ stompbox.setValueFunction(pedalAProp, val.linlin(1, 127, 0, 1)) },
+					{ stompbox.setValueFunction(pedalBProp, val.linlin(1, 127, 0, 1)) }
 				);
 			}
 		});

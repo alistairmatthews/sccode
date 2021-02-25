@@ -1,7 +1,9 @@
 AjmSimpleReverb {
 
+	//TODO: OnOff is an in/out, so reverb dies away naturally
+
 	//The MVC model for the reverb
-	var <>revModel;
+	var <>model;
 	//The class that builds the GUI
 	var <>viewMaker;
 	//The synth
@@ -16,40 +18,28 @@ AjmSimpleReverb {
 
 	init {
 		//Set up the MVC model
-		revModel = Event.new;
-		revModel.onOff = 0; //Reverb in/out
-		revModel.mix = 0.87; //Mix of effect
-		revModel.room = 0.5; //Room size
-		revModel.damp = 0.5; //HF damping
+		model = Event.new;
+		model.onOff = 0; //Reverb in/out
+		model.mix = 0.87; //Mix of effect
+		model.room = 0.5; //Room size
+		model.damp = 0.5; //HF damping
 		//Make the synth def
 		this.makeSynthDef();
 		//Make the GUI
 		this.makeGUI();
 		//Add the controller as a dependent of the model
-		//mvcController = this.controller();
-		//revModel.addDependant(this.controller());
 		this.addTheDependant();
 	}
 
 	//Call this function to change any value in the model
 	setValueFunction {
 		arg key, value;
-		postln("In setValueFunction wihtin the class. Key is " + key + "Value is" + value);
-		revModel [key] = value;
-		revModel.changed(key, value); //call changed to notify dependants of changes
+		model [key] = value;
+		model.changed(key, value); //call changed to notify dependants of changes
 	}
 
-	//This is the MVC controller
-	/*controller {
-		arg theChanger, what, val;
-		postln("In the controller in the class. theChanger: " + theChanger + "what: " + what + "val: " + val);
-		viewMaker.updateControls(what, val);
-		revSynth.set(what, val);
-	}*/
-
-	//This method adds the controller as a dependant of the model
+	//This method adds the MVC controller as a dependant of the model
 	addTheDependant {
-		postln ("In addDependant in the class");
 		//Note: I found that you can only add the controller
 		//as a dependant if you create it as a function, not as a
 		//method in this class. Otherwise, the controller is called
@@ -57,11 +47,10 @@ AjmSimpleReverb {
 		//It also doesn't seem to add correctly.
 		revController = {
 			arg theChanger, what, val;
-			postln("In the controller in the class. theChanger: " + theChanger + "what: " + what + "val: " + val);
 			viewMaker.updateControls(what, val);
 			revSynth.set(what, val);
 		};
-		revModel.addDependant(revController);
+		model.addDependant(revController);
 	}
 
 	makeSynthDef {
@@ -100,11 +89,14 @@ AjmSimpleReverb {
 	}
 
 	makeSynth {
+		arg inputBus, outputBus;
 		revSynth = Synth(\reverbstompbox, [
+			\inBus, inputBus,
+			\outBus, outputBus,
 			\onOff, 0,
-			\mix, revModel.mix,
-			\room, revModel.room,
-			\damp, revModel.damp
+			\mix, model.mix,
+			\room, model.room,
+			\damp, model.damp
 		]);
 	}
 
@@ -112,8 +104,8 @@ AjmSimpleReverb {
 		//Create the window
 		~win = Window.new("FreeVerb", Rect(100, 100, 420, 140));
 
-		//viewMaker = AjmViewMaker.new(~win, revModel, Color.green(0.6));
-		viewMaker = AjmViewMaker.new(~win, revModel, this, Color.green(0.6));
+		//viewMaker = AjmViewMaker.new(~win, model, Color.green(0.6));
+		viewMaker = AjmViewMaker.new(~win, this, Color.green(0.6));
 
 		//Create the on/off button
 		viewMaker.makeButton(\onOff, "On", "Off", 10, 10);
@@ -132,10 +124,9 @@ AjmSimpleReverb {
 			//Clean up MIDI binding
 			MIDIdef.freeAll;
 			//remove the synth and the model dependency
-			//revModel.removeDependant(revController);
-			//revModel.removeDependant(this.controller);
+			model.removeDependant(revController);
 			revSynth.free;
-			revModel = nil;
+			model = nil;
 		});
 		~win.front;
 	}

@@ -5,8 +5,8 @@ aj's Supercollider code repo
 ## Approach
 
 - Signal controllers
-  - Input
-  - Ouput
+  - Input stage
+  - Ouput stage
   - Mixer
 - Instruments
   - Synths
@@ -15,7 +15,7 @@ aj's Supercollider code repo
   - Each of these should be like a stomp box
     - FreeVerb - Built
     - Random delay
-    - Granular delay - Built
+    - Granular delay - Built but needs to be moved to a class
 - Loops
   - Each uses one or more instruments to play sounds
   - Use patterns to make them interesting and with some randomness
@@ -26,7 +26,7 @@ aj's Supercollider code repo
   - Use buses to tie 'em together
   - patch includes patterns for instruments
   - midi pedal bindings for the loop
-  - midi pedal bindings for the stomp boxes and instruments are saved with the effect/instrument, not the patch!
+  - midi pedal bindings for the stomp boxes and instruments are saved with the patch!
 
 Each instrument, effects, loop, and control object should be a class so it can be re-used in more than one patch.
 
@@ -37,9 +37,7 @@ Each instrument, effects, loop, and control object should be a class so it can b
     - A user interface to adjust parameters ~ Done!
     - midi control ~ Done!
     - Place all re-usable code into appropriate class defs ~ Done!
-    - Place the effect itself in a class so it can be reused in different patches.
-	    - Currently doing this. Just needs tidying up and commenting on.
-	    - Once that's done think about how to use busses - when we're reusing the simplereverb object in multiple patches, we'll have to pass it input and output busses to route signals.
+    - Place the effect itself in a class so it can be reused in different patches. Done!
 
 1. Build a granulator stompbox from the demo
 

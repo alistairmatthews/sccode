@@ -18,19 +18,18 @@ AjmViewMaker {
 
 	*new {
 		//arg win, mod, colour;
-		arg win, mod, call, colour;
+		arg win, call, colour;
 		//call the superclass new, then this class's init
-		//^super.new.init(win, mod, colour);
-		^super.new.init(win, mod, call, colour);
+		^super.new.init(win, call, colour);
 	}
 
 	init {
 		//arg win, mod, colour;
-		arg win, mod, call, colour;
+		arg win, call, colour;
 		//Store the window and model
 		window = win;
-		model = mod;
 		caller = call;
+		model = caller.model;
 		highlightColour = colour;
 		//Create a dictionary of controls groups
 		dicControlGroups = Dictionary.new();
@@ -53,9 +52,7 @@ AjmViewMaker {
 		.value_(model[prop])
 		.action_({
 			arg view;
-			postln("In makeButton. prop is " + prop + "value is " + view.value);
 			caller.setValueFunction(prop, view.value);
-			//~setValueFunction.value(prop, view.value);
 		});
 
 		//Add the button to the array
@@ -81,7 +78,6 @@ AjmViewMaker {
 		.value_(ctlSpec.unmap(model[prop]))
 		.action_({
 			arg view;
-			postln("In makeSliderGroup. prop is " + prop + "value is " + view.value);
 			caller.setValueFunction(prop, ctlSpec.map(view.value));
 		});
 
@@ -113,12 +109,10 @@ AjmViewMaker {
 			controlGroup.at(0).isKindOf(Button),
 			{
 				//Set the button value
-				postln("In updateControls. It's a button");
 				controlGroup.at(0).value = newValue;
 			},
 			{
 				//It must be a slider group
-				postln("In updateControls. It's a slider");
 				//Set the slider value using the controlspec
 				controlGroup.at(0).value = controlGroup.at(1).unmap(newValue);
 				//Set the display static text
