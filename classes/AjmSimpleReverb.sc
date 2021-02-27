@@ -1,15 +1,19 @@
 AjmSimpleReverb {
 
+	//This a reverb class based on FreeVerb, with a GUI.
+	//MIDI control is available
+
 	//TODO: OnOff is an in/out, so reverb dies away naturally
 
+	//TODO: Review which of these variables should be public and read or write.
 	//The MVC model for the reverb
 	var <>model;
-	//The class that builds the GUI
+	//The MVC controller
+	var revController;
+	//The class that builds the GUI (MVC View)
 	var <>viewMaker;
 	//The synth
 	var <>revSynth;
-	//The MVC controller
-	var revController;
 
 	*new {
 		//call the superclass new, then this class's init
@@ -35,7 +39,40 @@ AjmSimpleReverb {
 	setValueFunction {
 		arg key, value;
 		model [key] = value;
-		model.changed(key, value); //call changed to notify dependants of changes
+		model.changed(key, value); //call changed to notify dependants (the controller) of changes
+	}
+
+	makeGUI {
+		//This implements the MVC view
+
+		//Create the window
+		~win = Window.new("FreeVerb", Rect(100, 100, 420, 140));
+
+		//viewMaker = AjmViewMaker.new(~win, model, Color.green(0.6));
+		viewMaker = AjmViewMaker.new(~win, this, Color.green(0.6));
+
+		//Create the on/off button
+		viewMaker.makeButton(\onOff, "On", "Off", 10, 10);
+
+		//Create the mix slider group
+		viewMaker.makeSliderGroup(\mix, "Mix:", 60, 20);
+
+		//Create the room slider group
+		viewMaker.makeSliderGroup(\room, "Room:", 60, 60);
+
+		//Create the HF Damping slider group
+		viewMaker.makeSliderGroup(\damp, "HF Damping:", 60, 100);
+
+		//Clean up when the window is closed
+		~win.onClose_({
+			//Clean up MIDI binding
+			MIDIdef.freeAll;
+			//remove the synth and the model dependency
+			model.removeDependant(revController);
+			revSynth.free;
+			model = nil;
+		});
+		~win.front;
 	}
 
 	//This method adds the MVC controller as a dependant of the model
@@ -54,7 +91,8 @@ AjmSimpleReverb {
 	}
 
 	makeSynthDef {
-		//In this method, make the synth def and send it to the server
+
+		//Make the synth def and send it to the server
 
 		//This is for posting things from inside the Synth
 		//o = OSCFunc({ |msg| msg.postln }, '/tr', s.addr);
@@ -86,9 +124,11 @@ AjmSimpleReverb {
 			//Output the reverb'ed signal to the specified bus
 			Out.ar(outBus, sig);
 		}).add;
+
 	}
 
 	makeSynth {
+		//Create the reverb synth from the SynthDef, using the model
 		arg inputBus, outputBus;
 		revSynth = Synth(\reverbstompbox, [
 			\inBus, inputBus,
@@ -98,37 +138,6 @@ AjmSimpleReverb {
 			\room, model.room,
 			\damp, model.damp
 		]);
-	}
-
-	makeGUI {
-		//Create the window
-		~win = Window.new("FreeVerb", Rect(100, 100, 420, 140));
-
-		//viewMaker = AjmViewMaker.new(~win, model, Color.green(0.6));
-		viewMaker = AjmViewMaker.new(~win, this, Color.green(0.6));
-
-		//Create the on/off button
-		viewMaker.makeButton(\onOff, "On", "Off", 10, 10);
-
-		//Create the mix slider group
-		viewMaker.makeSliderGroup(\mix, "Mix:", 60, 20);
-
-		//Create the room slider group
-		viewMaker.makeSliderGroup(\room, "Room:", 60, 60);
-
-		//Create the HF Damping slider group
-		viewMaker.makeSliderGroup(\damp, "HF Damping:", 60, 100);
-
-		//Clean up when the window is closed
-		~win.onClose_({
-			//Clean up MIDI binding
-			MIDIdef.freeAll;
-			//remove the synth and the model dependency
-			model.removeDependant(revController);
-			revSynth.free;
-			model = nil;
-		});
-		~win.front;
 	}
 
 }

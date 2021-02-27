@@ -12,13 +12,15 @@ s.waitForBoot({
 
 	//Set up the buffer to which sound is recorded
 	//It's 5 seconds and one channel
-	b = Buffer.alloc(s, s.sampleRate * 5, 1);
+	//b = Buffer.alloc(s, s.sampleRate * 5, 1);
+
+	~ajmGranulator = AjmGranulator.new();
 
 	//SynthDefs
 
 	//This SynthDef reads the input signal, applies a volume and sends
 	//it to a bus
-	SynthDef.new(\micListener, {
+	/*SynthDef.new(\micListener, {
 		arg in = 0, out = 0, amp = 1;
 		var sig;
 		//Note: with SoundIn the first audio input is always 0
@@ -121,24 +123,24 @@ s.waitForBoot({
 		sig = sig * env * amp;
 		Out.ar(out, sig);
 	}).add;
-
+*/
 	//MVC model
-	~granModel = Event.new;
-	~granModel.inOut = 0;
-	~granModel.rateRand = 0;
-	~granModel.rate = 1;
+	//~granModel = Event.new;
+	//~granModel.inOut = 0;
+	//~granModel.rateRand = 0;
+	//~granModel.rate = 1;
 
 	//Call this function to change any value in the model
-	~setValueFunction = {
+	/*~setValueFunction = {
 		arg key, value;
 		~granModel [key] = value;
 		~granModel.changed(key, value); //call changed to notify dependants of changes
-	};
+	};*/
 
 
 	//MVC View
 	//Create the window
-	~win = Window.new("Granulator", Rect(100, 100, 420, 140));
+	/*~win = Window.new("Granulator", Rect(100, 100, 420, 140));
 
 	~ajmViewMaker = AjmViewMaker.new(~win, ~granModel, Color.magenta(0.6));
 
@@ -170,10 +172,10 @@ s.waitForBoot({
 		~grainGrp.free;
 		~granModel = nil;
 	});
-	~win.front;
+	~win.front;*/
 
 	//MVC Controller
-	~granController = {
+	/*~granController = {
 		arg theChanger, what, val;
 		~ajmViewMaker.updateControls(what, val);
 		switch (what,
@@ -190,10 +192,10 @@ s.waitForBoot({
 				~g.do({ arg n; n.set(what, val)}); }
 		);
 	};
-	~granModel.addDependant(~granController);
+	~granModel.addDependant(~granController);*/
 
 	//Midi Control
-	~ajmMidiBinder = AjmMidiBinder.new(~granModel);
+	~ajmMidiBinder = AjmMidiBinder.new(~ajmGranulator);
 
 	//Bind footswitch 1 to the In/Out property of the model
 	~ajmMidiBinder.bindFootSwitch(0, \inOut);
@@ -222,7 +224,7 @@ s.waitForBoot({
 	//Set up the two audio buffers, four groups to order Synths correctly,
 	//plus the three utility synths (all except the granulator)
 	//Set up the audio buses for the mic and pointer
-	~micBus = Bus.audio(s, 1);
+	/*~micBus = Bus.audio(s, 1);
 	~ptrBus = Bus.audio(s, 1);
 
 	//Create groups to order the Synths
@@ -236,7 +238,11 @@ s.waitForBoot({
 	//Now we can set up the synths, placing each into the right group
 	~micListener = Synth(\micListener, [\in, 0, \out, ~micBus, \amp, ~granModel.inOut], ~micGrp);
 	~pointer = Synth(\pointer, [\buf, b, \out, ~ptrBus], ~ptrGrp);
-	~recorder = Synth(\soundRecorder, [\ptrIn, ~ptrBus, \micIn, ~micBus, \buf, b], ~recGrp);
+	~recorder = Synth(\soundRecorder, [\ptrIn, ~ptrBus, \micIn, ~micBus, \buf, b], ~recGrp);*/
+
+	//TODO: should this wireUp call move into the class init?
+
+	~ajmGranulator.wireUp();
 
 	//Create 1 granulator
 	// ~g = Synth.new(\granulator, [
@@ -262,7 +268,7 @@ s.waitForBoot({
 	// ], ~grainGrp);
 
 	//Create 20 granulators
-	~g = 20.collect({
+	/*~g = 20.collect({
 		arg n;
 		Synth(\granulator, [
 			//This line means grains further from the recptr are quieter
@@ -289,7 +295,9 @@ s.waitForBoot({
 			\ptrRandSamples, 10000,
 			\minPtrDelay, 1000,
 		], ~grainGrp);
-	});
+	});*/
+
+	~ajmGranulator.makeGranulators();
 
 });
 
@@ -297,22 +305,22 @@ s.waitForBoot({
 )
 
 //Test In/Out
-~setValueFunction.value(\inOut, 0);
-~setValueFunction.value(\inOut, 1);
+~ajmGranulator.setValueFunction(\inOut, 0);
+~ajmGranulator.setValueFunction(\inOut, 1);
 //Test rate
-~setValueFunction.value(\rate, 0.5);
-~setValueFunction.value(\rate, 1);
-~setValueFunction.value(\rate, 2);
-~setValueFunction.value(\rate, 4);
+~ajmGranulator.setValueFunction(\rate, 0.5);
+~ajmGranulator.setValueFunction(\rate, 1);
+~ajmGranulator.setValueFunction(\rate, 2);
+~ajmGranulator.setValueFunction(\rate, 4);
 //Test random rate
-~setValueFunction.value(\rateRand, 0.01);
-~setValueFunction.value(\rateRand, 5);
-~setValueFunction.value(\rateRand, 50);
+~ajmGranulator.setValueFunction(\rateRand, 0.01);
+~ajmGranulator.setValueFunction(\rateRand, 5);
+~ajmGranulator.setValueFunction(\rateRand, 50);
 
 //Stop the granulator by closing the gate
-~g.do({ arg n; n.set(\gate, 0)});
+~ajmGranulator.granulators.do({ arg n; n.set(\gate, 0)});
 
 //Testing the content of the buffer
-b.plot;
+~ajmGranulator.soundBuffer.plot;
+~ajmGranulator.soundBuffer.play;
 s.defaultGroup.deepFree;
-b.play;
