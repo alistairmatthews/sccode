@@ -14,7 +14,7 @@ AjmGranulator {
 	//The MVC model for the granulator
 	var <>model;
 	//The class that builds the GUI (MVC View)
-	var <>viewMaker;
+	var viewMaker;
 	//The MVC controller
 	var granController;
 	//This buffer stores incoming sounds for creating grains from
@@ -32,6 +32,8 @@ AjmGranulator {
 	var grainGrp;
 	//This collection of synths are the grain players
 	var <>granulators;
+	//To free all granulator synths:
+	// granulators.do({ arg n; n.set(\gate, 0)});
 
 	*new {
 		//call the superclass new, then this class's init
@@ -58,7 +60,8 @@ AjmGranulator {
 	setValueFunction {
 		arg key, value;
 		model [key] = value;
-		model.changed(key, value); //call changed to notify dependants (the controller) of changes
+		//call changed to notify dependants (the controller) of changes
+		model.changed(key, value);
 	}
 
 	makeGUI {
@@ -80,7 +83,7 @@ AjmGranulator {
 
 		//Clean up when the window is closed
 		~win.onClose_({
-			//Stop the granulator by closing the gate
+			//Stop the granulators by closing the gate
 			granulators.do({ arg n; n.set(\gate, 0)});
 			//Remove the midi bindings
 			MIDIdef.freeAll;
@@ -247,10 +250,9 @@ AjmGranulator {
 		//This method sets up the two audio buffers, four groups to order Synths correctly,
 		//plus the three utility synths (all except the granulator)
 
+		arg inputBus; //The bus to listen to
+
 		//Set up the audio buses for the mic and pointer
-
-		//!!!TODO: pass in the bus to listen to, so we can patch it to other sources
-
 		~micBus = Bus.audio(Server.local, 1);
 		~ptrBus = Bus.audio(Server.local, 1);
 
@@ -263,26 +265,35 @@ AjmGranulator {
 		grainGrp = Group.after(recGrp);
 
 		//Now we can set up the synths, placing each into the right group
-		micListener = Synth(\micListener, [\in, 0, \out, ~micBus, \amp, model.inOut], micGrp);
-		pointer = Synth(\pointer, [\buf, soundBuffer, \out, ~ptrBus], ptrGrp);
-		recorder = Synth(\soundRecorder, [\ptrIn, ~ptrBus, \micIn, ~micBus, \buf, soundBuffer], recGrp);
+		micListener = Synth(
+			\micListener,
+			[\in, inputBus, \out, ~micBus, \amp, model.inOut],
+			micGrp
+		);
+		pointer = Synth(
+			\pointer,
+			[\buf, soundBuffer, \out, ~ptrBus],
+			ptrGrp
+		);
+		recorder = Synth(
+			\soundRecorder,
+			[\ptrIn, ~ptrBus, \micIn, ~micBus, \buf, soundBuffer],
+			recGrp
+		);
 	}
 
 	makeGranulators {
+		arg outputBus, howMany;
 
-		//TODO: pass in the number of granulators you want to create.
-
-		//TODO: pass in the bus to play to, so we can patch it to other synths etc.
-
-		//Create 20 granulators
-		granulators = 20.collect({
+		//Create granulators. The number is specified in howMany
+		granulators = howMany.asInt.collect({
 			arg n;
 			Synth(\granulator, [
 				//This line means grains further from the recptr are quieter
 				//so events seem to fade out
 				\amp, n.linlin(0, 19, -3, -20).dbamp,
 				\buf, soundBuffer,
-				\out, 0,
+				\out, outputBus,
 				\atk, 1,
 				\rel, 1,
 				\gate, 1,

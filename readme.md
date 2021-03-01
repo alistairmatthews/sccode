@@ -46,8 +46,9 @@ Each instrument, effects, loop, and control object should be a class so it can b
 	- Implement the MVC structure from the simple reverb - Done!
     - Build a UI - Done!
     - Midi control - Done!
-    - Place the effect itself in a class so it can be reused in different patches.
+    - Place the effect itself in a class so it can be reused in different patches. Done!
 
+1. Try a single patch with more than one stompbox. Does the midi bit play nicely?
 1. Implement full test suite and stick to TDD principles
 
     - Note that a mocking framework may not be necessary because you're not using anything external to SC, such as databases.
