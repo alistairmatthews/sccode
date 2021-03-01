@@ -40,10 +40,7 @@ AjmGranulator {
 
 	init {
 		//Set up the buffer
-
-		///!!!TODO: s is undefined here. How to get the default server?
-
-		soundBuffer = Buffer.alloc(s, s.sampleRate * 5, 1);
+		soundBuffer = Buffer.alloc(Server.local, Server.local.sampleRate * 5, 1);
 		//Make the SynthDefs
 		this.makeSynthDefs();
 		//Set up the MVC model
@@ -53,7 +50,8 @@ AjmGranulator {
 		model.rate = 1; //Sets how fast to play back each grain. 1 means original speed/pitch
 		//Make the GUI
 		this.makeGUI();
-
+		//Add the controller as a dependent of the model
+		this.addTheDependant();
 	}
 
 	//Call this function to change any value in the model
@@ -80,13 +78,10 @@ AjmGranulator {
 		//Create the random rate slider group
 		viewMaker.makeSliderGroup(\rateRand, "Random:", 60, 60, 0.01, 100, \exp);
 
-
-		//!!!!!TODO: review this at the end!!!
-
 		//Clean up when the window is closed
 		~win.onClose_({
 			//Stop the granulator by closing the gate
-			~g.do({ arg n; n.set(\gate, 0)});
+			granulators.do({ arg n; n.set(\gate, 0)});
 			//Remove the midi bindings
 			MIDIdef.freeAll;
 			//remove the synth and the model dependency
@@ -116,10 +111,6 @@ AjmGranulator {
 		granController = {
 			arg theChanger, what, val;
 			viewMaker.updateControls(what, val);
-			//revSynth.set(what, val);
-
-			//!!!TODO: review this at the end!!!
-
 			switch (what,
 				\inOut, {
 					//Set the listener to record or not
@@ -127,16 +118,15 @@ AjmGranulator {
 				},
 				\rateRand, {
 					//Set the random rate on the granulator but remember to use midiratio
-					~g.do({ arg n; n.set(what, val.midiratio)});
+					granulators.do({ arg n; n.set(what, val.midiratio)});
 				},
 				{
 					//For all other properties, set the value on the granulator
-					~g.do({ arg n; n.set(what, val)}); }
+					granulators.do({ arg n; n.set(what, val)}); }
 			);
 		};
 		model.addDependant(granController);
 	}
-
 
 	makeSynthDefs {
 
@@ -259,12 +249,10 @@ AjmGranulator {
 
 		//Set up the audio buses for the mic and pointer
 
-		//!!!!TODO: How to get the server here? s is not defined.
-
 		//!!!TODO: pass in the bus to listen to, so we can patch it to other sources
 
-		~micBus = Bus.audio(s, 1);
-		~ptrBus = Bus.audio(s, 1);
+		~micBus = Bus.audio(Server.local, 1);
+		~ptrBus = Bus.audio(Server.local, 1);
 
 		//Create groups to order the Synths
 		//Any synth that reads from a bus must be downstream
@@ -275,7 +263,7 @@ AjmGranulator {
 		grainGrp = Group.after(recGrp);
 
 		//Now we can set up the synths, placing each into the right group
-		micListener = Synth(\micListener, [\in, 0, \out, ~micBus, \amp, ~granModel.inOut], micGrp);
+		micListener = Synth(\micListener, [\in, 0, \out, ~micBus, \amp, model.inOut], micGrp);
 		pointer = Synth(\pointer, [\buf, soundBuffer, \out, ~ptrBus], ptrGrp);
 		recorder = Synth(\soundRecorder, [\ptrIn, ~ptrBus, \micIn, ~micBus, \buf, soundBuffer], recGrp);
 	}
@@ -310,7 +298,7 @@ AjmGranulator {
 				\ptrBus, ~ptrBus,
 				//This line spreads the twenty synths evenly to twenty different
 				//playback points
-				\ptrSampleDelay, n.linlin(0, 19, 1000, s.sampleRate * 2),
+				\ptrSampleDelay, n.linlin(0, 19, 1000, Server.local.sampleRate * 2),
 				\ptrRandSamples, 10000,
 				\minPtrDelay, 1000,
 			], grainGrp);
