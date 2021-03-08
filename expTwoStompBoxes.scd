@@ -2,10 +2,10 @@
 
 s.waitForBoot({
 
+	~patchCable1 = Bus.audio(s, 1);
+
 	~ajmGranulator = AjmGranulator.new();
 	~ajmSimpleReverb = AjmSimpleReverb.new();
-
-	~patchCable1 = Bus.audio(s, 1);
 
 	//Granulator Midi Control
 	~granMidiBinder = AjmMidiBinder.new(~ajmGranulator);
@@ -23,9 +23,13 @@ s.waitForBoot({
 
 	//TODO: You've got to order these correctly in the node tree, otherwise no sound
 
-	~ajmSimpleReverb.makeSynth(0, ~patchCable1);
-	~ajmGranulator.wireUp(~patchCable1);
-	~ajmGranulator.makeGranulators(0, 20);
+	~granGroup = Group.new();
+	~ajmGranulator.wireUp(0, ~granGroup);
+	~ajmGranulator.makeGranulators(~patchCable1, 20);
+	~reverbGroup = Group.tail(s);
+	~ajmSimpleReverb.makeSynth(~patchCable1, 1, ~reverbGroup);
+	//TODO: This is causing the output to distort massively. ALl you can here are clicks
+	//TODO: make sure the two above groups get removed when you close the windows.
 
 });
 

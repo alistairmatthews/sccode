@@ -129,7 +129,7 @@ AjmSimpleReverb {
 
 	makeSynth {
 		//Create the reverb synth from the SynthDef, using the model
-		arg inputBus, outputBus;
+		arg inputBus, outputBus, parentGroup;
 		revSynth = Synth(\reverbstompbox, [
 			\inBus, inputBus,
 			\outBus, outputBus,
@@ -137,7 +137,7 @@ AjmSimpleReverb {
 			\mix, model.mix,
 			\room, model.room,
 			\damp, model.damp
-		]);
+		], parentGroup);
 	}
 
 }

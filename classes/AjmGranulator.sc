@@ -250,7 +250,8 @@ AjmGranulator {
 		//This method sets up the two audio buffers, four groups to order Synths correctly,
 		//plus the three utility synths (all except the granulator)
 
-		arg inputBus; //The bus to listen to
+		arg inputBus, //The bus to listen to
+		parentGroup; //The group to place sub groups and synths in
 
 		//Set up the audio buses for the mic and pointer
 		~micBus = Bus.audio(Server.local, 1);
@@ -259,7 +260,7 @@ AjmGranulator {
 		//Create groups to order the Synths
 		//Any synth that reads from a bus must be downstream
 		//from the synth that writes to that bus.
-		micGrp = Group.new;
+		micGrp = Group.head(parentGroup);
 		ptrGrp = Group.after(micGrp);
 		recGrp = Group.after(ptrGrp);
 		grainGrp = Group.after(recGrp);
@@ -286,7 +287,7 @@ AjmGranulator {
 		arg outputBus, howMany;
 
 		//Create granulators. The number is specified in howMany
-		granulators = howMany.asInt.collect({
+		granulators = howMany.collect({
 			arg n;
 			Synth(\granulator, [
 				//This line means grains further from the recptr are quieter
