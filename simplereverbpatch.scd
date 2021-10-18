@@ -5,7 +5,7 @@
 (
 
 s.waitForBoot({
-
+	
 	//Create the reverb
 	~ajmSimpleReverb = AjmSimpleReverb.new();
 
@@ -25,9 +25,9 @@ s.waitForBoot({
 )
 
 //Test changes
-~ajmSimpleReverb.setValueFunction(\onOff, 1);
-~ajmSimpleReverb.setValueFunction(\onOff, 0);
-~ajmSimpleReverb.setValueFunction(\onOff, 1);
-~ajmSimpleReverb.setValueFunction(\mix, 0.5);
-~ajmSimpleReverb.setValueFunction(\room, 0.25);
-~ajmSimpleReverb.setValueFunction(\damp, 0.25);
+//~ajmSimpleReverb.setValueFunction(\onOff, 1);
+//~ajmSimpleReverb.setValueFunction(\onOff, 0);
+//~ajmSimpleReverb.setValueFunction(\onOff, 1);
+//~ajmSimpleReverb.setValueFunction(\mix, 0.5);
+//~ajmSimpleReverb.setValueFunction(\room, 0.25);
+//~ajmSimpleReverb.setValueFunction(\damp, 0.25);

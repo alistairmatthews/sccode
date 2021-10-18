@@ -41,22 +41,22 @@ s.waitForBoot({
 )
 
 //Test In/Out
-~ajmGranulator.setValueFunction(\inOut, 0);
-~ajmGranulator.setValueFunction(\inOut, 1);
+//~ajmGranulator.setValueFunction(\inOut, 0);
+//~ajmGranulator.setValueFunction(\inOut, 1);
 //Test rate
-~ajmGranulator.setValueFunction(\rate, 0.5);
-~ajmGranulator.setValueFunction(\rate, 1);
-~ajmGranulator.setValueFunction(\rate, 2);
-~ajmGranulator.setValueFunction(\rate, 4);
+//~ajmGranulator.setValueFunction(\rate, 0.5);
+//~ajmGranulator.setValueFunction(\rate, 1);
+//~ajmGranulator.setValueFunction(\rate, 2);
+//~ajmGranulator.setValueFunction(\rate, 4);
 //Test random rate
-~ajmGranulator.setValueFunction(\rateRand, 0.01);
-~ajmGranulator.setValueFunction(\rateRand, 5);
-~ajmGranulator.setValueFunction(\rateRand, 50);
+//~ajmGranulator.setValueFunction(\rateRand, 0.01);
+//~ajmGranulator.setValueFunction(\rateRand, 5);
+//~ajmGranulator.setValueFunction(\rateRand, 50);
 
 //Stop the granulator by closing the gate
-~ajmGranulator.granulators.do({ arg n; n.set(\gate, 0)});
+//~ajmGranulator.granulators.do({ arg n; n.set(\gate, 0)});
 
 //Testing the content of the buffer
-~ajmGranulator.soundBuffer.plot;
-~ajmGranulator.soundBuffer.play;
-s.defaultGroup.deepFree;
+//~ajmGranulator.soundBuffer.plot;
+//~ajmGranulator.soundBuffer.play;
+//s.defaultGroup.deepFree;
