@@ -1,16 +1,20 @@
 
 // A simple synthdef with harmonics of trig waves
 (
-SynthDef.new(\multiNote, {
-	arg freq = 440, attack = 0.1, release = 1, vol = 1, out;
-	var sig, env;
-	//sig = SinOsc.ar(freq) + (SinOsc.ar(freq * 2) * 0.5) + (SinOsc.ar(freq * 4) * 0.25);
-	sig = LFTri.ar(freq) + (LFTri.ar(freq * 2) * 0.5) + (LFTri.ar(freq * 4) * 0.25);
-	sig = sig * 0.3;
-	env = EnvGen.kr(Env.perc(attack, release), doneAction: Done.freeSelf);
-	sig = sig * env * vol;
-	Out.ar(out, sig.dup);
-}).add;
+
+s.waitForBoot({
+	
+	SynthDef.new(\multiNote, {
+		arg freq = 440, attack = 0.1, release = 1, vol = 1, out;
+		var sig, env;
+		//sig = SinOsc.ar(freq) + (SinOsc.ar(freq * 2) * 0.5) + (SinOsc.ar(freq * 4) * 0.25);
+		sig = LFTri.ar(freq) + (LFTri.ar(freq * 2) * 0.5) + (LFTri.ar(freq * 4) * 0.25);
+		sig = sig * 0.3;
+		env = EnvGen.kr(Env.perc(attack, release), doneAction: Done.freeSelf);
+		sig = sig * env * vol;
+		Out.ar(out, sig.dup);
+	}).add;
+});
 )
 
 Env.perc(1, 10).plot;
