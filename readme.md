@@ -7,15 +7,15 @@ aj's Supercollider code repo
 - Signal controllers
   - Input stage
   - Ouput stage
-  - Mixer
+  - Mixer?
 - Instruments
   - Synths
-  - Samplers?
+  - Samplers
 - Effects
   - Each of these should be like a stomp box
     - FreeVerb - Built
     - Random delay
-    - Granular delay - Built but needs to be moved to a class
+    - Granular delay - Built
 - Loops
   - Each uses one or more instruments to play sounds
   - Use patterns to make them interesting and with some randomness

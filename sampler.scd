@@ -1,4 +1,5 @@
 (
+//Amend this to a relative path
 var path = "C:/Users/AlistairM/Documents/MakingMusic/samples/MySamples/";
 
 path;

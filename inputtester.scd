@@ -4,6 +4,7 @@
 //If the Focusrite is not present, it SC uses the default soundcard
 (
 o = Server.default.options;
+// This should only work on Windows
 o.device = "ASIO : Focusrite USB ASIO";
 Server.default.reboot;
 )
