@@ -48,7 +48,7 @@ AjmSimpleReverb {
 		//Create the window
 		~win = Window.new("FreeVerb", Rect(100, 100, 420, 140));
 
-		//viewMaker = AjmViewMaker.new(~win, model, Color.green(0.6));
+		//Create the ViewMaker object that manages the GUI
 		viewMaker = AjmViewMaker.new(~win, this, Color.green(0.6));
 
 		//Create the on/off button
