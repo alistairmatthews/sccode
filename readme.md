@@ -7,7 +7,7 @@ aj's Supercollider code repo
 - Signal controllers
   - Input stage
   - Ouput stage
-  - Mixer?
+  - Mixer??
 - Instruments
   - Synths
   - Samplers
