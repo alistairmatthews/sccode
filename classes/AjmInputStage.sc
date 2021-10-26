@@ -4,7 +4,7 @@ AjmInputStage {
 	//and displays the two input levels
 
 	//The synth
-	var <>inputSynth;
+	var <>inputStageSynth;
 
 	*new {
 		//call the superclass new, then this class's init
@@ -26,7 +26,7 @@ AjmInputStage {
 		//This is for posting things from inside the Synth
 		//o = OSCFunc({ |msg| msg.postln }, '/tr', s.addr);
 
-		SynthDef(\inputStage, {
+		SynthDef(\ajsinputstage, {
 			arg leftInBus = 0,
 			rightInBus = 1,
 			outBus = 0,
@@ -44,6 +44,18 @@ AjmInputStage {
 			Out.ar(outBus, Mix.ar([leftMixed, rightMixed]));
 		}).add;
 		
+	}
+
+	makeSynth {
+		//Create the input stage synth from the SynthDef
+		arg leftInputBus, rightInputBus, outputBus, leftVol = 0, rightVol = 1, parentGroup;
+		inputStageSynth = Synth(\ajsinputstage, [
+			\leftInBus, 0,
+			\rightInBus, 1,
+			\outBus, 0,
+			\leftMix, 0.5,
+			\rightMix, 0.5
+		], parentGroup); 
 	}
 	
 }
