@@ -1,3 +1,7 @@
+s.waitForBoot();
+s.quit();
+
+
 (
 
 s.waitForBoot({
@@ -10,3 +14,5 @@ s.waitForBoot({
 });
 
 )
+
+s.plotTree();

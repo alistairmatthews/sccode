@@ -1,8 +1,8 @@
 
-// Path to demonstrate the additive poly synth
+// Patch to demonstrate the additive poly synth
 
 //Boot the synth and create the synth
-s.waitForBoot({	~sjmAdditivePolySynth = AjmAdditivePolySynth.new(); });
+s.waitForBoot({	~ajmAdditivePolySynth = AjmAdditivePolySynth.new(); });
 
 //Demo single notes
 y = Synth.new(\addPolySynth, ["freq", 200, "out", 0]);

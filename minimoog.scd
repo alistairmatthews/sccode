@@ -1,85 +1,10 @@
-// Troubleshooting code:
 
-// Show the tree of nodes
-s.plotTree;
-
-// Show the scope
-s.scope;
+// Patch to demonstrate the minimoog synth
 
 // Post things from inside the Synth
-o = OSCFunc({ |msg| msg.postln }, '/tr', s.addr);
+//o = OSCFunc({ |msg| msg.postln }, '/tr', s.addr);
 
-// ajm's Mini Moog
-(
-SynthDef.new(\ajmMiniMoog, {
-	arg midinote = 69,
-	   glisstime = 0,
-	   osc1wave = 0,
-	   osc1mix = 1,
-	   osc1dutycycle = 0.5,
-	   osc2wave = 1,
-	   osc2octave = 0,
-	   osc2detune = 0,
-	   osc2dutycycle = 0.5,
-	   osc2mix = 0,
-	   osc3wave = 1,
-	   osc3octave = 0,
-	   osc3detune = 0,
-	   osc3dutycycle = 0.5,
-	   osc3mix = 0,
-	   noisetype = 0,
-	   noisemix = 0,
-	   volenvattack = 0.1,
-	   volenvdecay = 1,
-	   volenvsustain = 0.5,
-	   volenvrelease = 1,
-	   filtercutofffreq = 440,
-	   filtergain = 0.1, // can be between 0 and 4
-	   filtercontrol = 0, // 0 = filter off, 1 = filter freq from arg, 2 = filter freq from keyboard
-	   gate = 1;
-	var osc1, osc1freq, osc2, osc2freq, osc3, osc3freq, noise, volenv, outputsig;
-	// This line is to send stuff to o for troubleshooting
-	SendTrig.kr(Impulse.kr(4), 0, osc1dutycycle);
-	// Store the frequencies for the oscilators. Use lag to implement glissando
-	osc1freq = midinote.midicps.lag(glisstime);
-	osc2freq = ((midinote + (12 * osc2octave)).midicps + osc2detune).lag(glisstime);
-	osc3freq = ((midinote + (12 * osc3octave)).midicps + osc3detune).lag(glisstime);
-	// First oscillator
-	osc1 = Select.ar(osc1wave, [
-		VarSaw.ar(osc1freq, 0, osc1dutycycle), // saw when osc1wave = 0
-		Pulse.ar(osc1freq, osc1dutycycle) // square when osc1wave = 1
-	]);
-	// Second oscillator
-	osc2 = Select.ar(osc2wave, [
-		VarSaw.ar(osc2freq, 0, osc2dutycycle), // saw when osc2wave = 0
-		Pulse.ar(osc2freq, osc2dutycycle) //square when osc2wave = 1
-	]);
-	// Third oscillator
-	osc3 = Select.ar(osc3wave, [
-		VarSaw.ar(osc3freq, 0, osc3dutycycle), // saw when osc3wave = 0
-		Pulse.ar(osc3freq, osc3dutycycle) //square when osc3wave = 1
-	]);
-	// Noise
-	noise = Select.ar(noisetype, [
-		WhiteNoise.ar, // White noise when noisetype = 0
-		PinkNoise.ar // Pink noise when noisetype = 1
-	]);
-	volenv = EnvGen.kr(Env.adsr(volenvattack, volenvdecay, volenvsustain, volenvrelease),  gate, doneAction: Done.freeSelf);
-	// Mixer
-	outputsig = ((osc1 * osc1mix) + (osc2 * osc2mix) + (osc3 * osc3mix) + (noise * noisemix)) * 0.6;
-	// Filter
-	// TODO: implement the "Amount of contour" control, which seems to fade the filter in and out
-	// TODO: Filter frequency envelope?
-	outputsig = Select.ar( filtercontrol, [
-		outputsig, // The filter is off when filter control = 0
-		MoogFF.ar(outputsig, filtercutofffreq.lag(glisstime), filtergain, 0, (1/filtergain.sqrt)), //Take the filter cutoff from the argument when filter control = 1
-		MoogFF.ar(outputsig, midinote.midicps.lag(glisstime), filtergain, 0, (1/filtergain.sqrt)) //Take the filter cutoff from the keyboard when filter control = 2
-	]);
-	// Volume envelope
-	outputsig = outputsig * volenv;
-	Out.ar(0, outputsig.dup);
-}).add;
-)
+s.waitForBoot({ ~ajmMiniMoog = AjmMiniMoog.new(); });
 
 // Test various notes and waveforms
 x = Synth.new(\ajmMiniMoog, ["gate", 1]);
@@ -112,9 +37,9 @@ z = Synth.new(\ajmMiniMoog, ["midinote", 69, "osc2wave", 2, "trig", 1]); // 100 
 z.set("trig", 0);
 z.set("noisemix", 1, "noisetype", 0, "trig", 1);
 z.set("noisemix", 1, "noisetype", 1, "trig", 1);
-z.set("noisemix", 1, "noisetype", 0, "trig", 1, "filtercutofffreq", 2000);
-z.set("noisemix", 1, "noisetype", 0, "trig", 1, "filtercutofffreq", 100, "filterq", 0.1);
-z.set("noisemix", 1, "noisetype", 0, "trig", 1, "filtercutofffreq", 440, "filterq", 1);
+//z.set("noisemix", 1, "noisetype", 0, "trig", 1, "filtercutofffreq", 2000);
+//z.set("noisemix", 1, "noisetype", 0, "trig", 1, "filtercutofffreq", 100, "filterq", 0.1);
+//z.set("noisemix", 1, "noisetype", 0, "trig", 1, "filtercutofffreq", 440, "filterq", 1);
 z.free;
 
 // Use this block to play different notes on y once it's already running
@@ -195,9 +120,9 @@ p = PmonoArtic(
 	\volenvdecay, Pwhite(0.01, 1.0),
 	\volenvsustain, Pwhite(0.1, 1.0),
 	\volenvrelease, Pwhite(0.01, 1.0),
-	\filtercutofffreq, Pwhite(300, 2000),
-	\filtergain, 1,
-	\filtercontrol, Pseq([2, 0], inf)
+	//	\filtercutofffreq, Pwhite(300, 2000),
+	//\filtergain, 1,
+	//\filtercontrol, Pseq([2, 0], inf)
 ).play;
 )
 
@@ -253,11 +178,12 @@ p = PmonoArtic(
 	\osc3mix, 0,
 	\noisetype, 0,
 	\noisemix, 1,
-	\filtergain, 4,
-	\filterkeyboardcontrol, 1
+	//\filtergain, 4,
+	//\filterkeyboardcontrol, 1
 ).play;
 )
 
+// Troubleshooting code:
 s.scope;
 s.plotTree;
 

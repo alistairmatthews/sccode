@@ -1,12 +1,3 @@
-//Select the ASIO driver when you boot the server?
-//Otherwise the MME driver is selected and latency is too slow.
-
-(
-o = Server.default.options;
-o.device = "ASIO : Focusrite USB ASIO";
-Server.default.reboot;
-)
-
 
 // Set up the buffer for the recorded sound
 b = Buffer.alloc(s, s.sampleRate * 10.0, 1); // a 10 second mono buffer

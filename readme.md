@@ -68,7 +68,10 @@ Each instrument, effects, loop, and control object should be a class so it can b
 	- Mix input
 	- Mix effects and instruments
 
-1. etc...
+1. Build some reusable synth classes
+   - Additive Polysynth. Done
+   - Moog thing. Done
+   - Fix filter in minimoog or build it separately?
 
 ## General Supercollider facts
 
