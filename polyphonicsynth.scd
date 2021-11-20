@@ -1,33 +1,20 @@
 
-// A simple synthdef with harmonics of trig waves
-(
+// Path to demonstrate the additive poly synth
 
-s.waitForBoot({
-	
-	SynthDef.new(\multiNote, {
-		arg freq = 440, attack = 0.1, release = 1, vol = 1, out;
-		var sig, env;
-		//sig = SinOsc.ar(freq) + (SinOsc.ar(freq * 2) * 0.5) + (SinOsc.ar(freq * 4) * 0.25);
-		sig = LFTri.ar(freq) + (LFTri.ar(freq * 2) * 0.5) + (LFTri.ar(freq * 4) * 0.25);
-		sig = sig * 0.3;
-		env = EnvGen.kr(Env.perc(attack, release), doneAction: Done.freeSelf);
-		sig = sig * env * vol;
-		Out.ar(out, sig.dup);
-	}).add;
-});
-)
+//Boot the synth and create the synth
+s.waitForBoot({	~sjmAdditivePolySynth = AjmAdditivePolySynth.new(); });
 
-Env.perc(1, 10).plot;
-
-y = Synth.new(\multiNote, ["freq", 200, "out", 0]);
-y = Synth.new(\multiNote, ["freq", 250, "out", 0, "attack", 1, "release", 10]);
+//Demo single notes
+y = Synth.new(\addPolySynth, ["freq", 200, "out", 0]);
+y = Synth.new(\addPolySynth, ["freq", 250, "out", 0, "attack", 1, "release", 10]);
 y.free;
 
+//Demo using a pattern
 (
 p = Pbind(
-	\instrument, \multiNote,
+	\instrument, \addPolySynth,
 	\midinote, 50, //Using \midinote and \harmonic to set the \freq arg
-	\harmonic, Pexprand(1, 10).round.trace,
+	\harmonic, Pexprand(1, 10).round.trace, //.trace sends the harmonic to the PostBuffer
 	\dur, Pwhite(0.2, 1),
 	\vol, 0.5,
 	\attack, Pwhite(0.5, 2),
@@ -35,9 +22,13 @@ p = Pbind(
 ).play;
 )
 
+//Change the speed of the clock
+TempoClock.default.tempo = 2;
 TempoClock.default.tempo = 1;
 
+//Stop playing
 p.stop;
 
+//Show the tree and the oscilloscope
 s.plotTree;
 s.scope;
