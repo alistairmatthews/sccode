@@ -1,3 +1,5 @@
+s.waitForBoot();
+s.quit();
 // A simple synth with two oscillators
 SynthDef(\singrain, { |freq = 440, amp = 0.2, sustain = 1|
 	var osc, env, output;

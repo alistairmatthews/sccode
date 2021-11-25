@@ -1,6 +1,10 @@
-(
-SynthDef('kickdrum', {
+//Kick drums
 
+(
+SynthDef(\electroKickDrum, {
+
+	//This is a simple sine wave, with an envelope
+	
     var osc, env, output;
 
     osc = {SinOsc.ar(60)};
@@ -12,16 +16,18 @@ SynthDef('kickdrum', {
         Pan2.ar(output, 0)
     )
 
-}).send(s);
+}).add;
 )
 
-t = Synth('kickdrum');
+t = Synth(\electroKickDrum);
 
 (
-    SynthDef('fullkickdrum', {
+SynthDef(\clickKickDrum, {
 
+	//This one is the same but with a white noise click at the start
+		
     var subosc, subenv, suboutput, clickosc, clickenv, clickoutput;
-
+		
     subosc = {SinOsc.ar(60)};
     subenv = {Line.ar(1, 0, 1, doneAction: 2)};
 
@@ -35,99 +41,117 @@ t = Synth('kickdrum');
         Pan2.ar(suboutput + clickoutput, 0)
     )
 
-}).send(s);
+}).add;
 )
 
-t = Synth('fullkickdrum');
+t = Synth(\clickKickDrum);
+
+//High-hats
 
 (
-SynthDef('openhat', {
+SynthDef(\electroOpenHat, {
 
+	//This open high hat uses filtered and enveloped white noise
+	
     var hatosc, hatenv, hatnoise, hatoutput;
 
     hatnoise = {LPF.ar(WhiteNoise.ar(1),6000)};
 
     hatosc = {HPF.ar(hatnoise,2000)};
-    hatenv = {Line.ar(1, 0, 0.3)};
+    hatenv = {Line.ar(1, 0, 0.3, doneAction: 2)};
 
     hatoutput = (hatosc * hatenv);
 
-    Out.ar(0,
-    Pan2.ar(hatoutput, 0)
+    Out.ar(0, Pan2.ar(hatoutput, 0));
+
+}).add;
 )
 
-}).send(s);
+(
+SynthDef(\electroClosedHat, {
 
-SynthDef('closedhat', {
-
+	//Same as the open high hat but with a shorter envelope
+	
     var hatosc, hatenv, hatnoise, hatoutput;
 
     hatnoise = {LPF.ar(WhiteNoise.ar(1),6000)};
 
     hatosc = {HPF.ar(hatnoise,2000)};
-    hatenv = {Line.ar(1, 0, 0.1)};
+    hatenv = {Line.ar(1, 0, 0.1, doneAction: 2)};
 
     hatoutput = (hatosc * hatenv);
 
-    Out.ar(0,
-    Pan2.ar(hatoutput, 0)
-    )
+    Out.ar(0, Pan2.ar(hatoutput, 0));
 
-}).send(s);
+}).add;
 )
 
-o = Synth('openhat');
-c = Synth('closedhat');
+o = Synth(\electroOpenHat);
+c = Synth(\electroClosedHat);
 
 (
-SynthDef('snaredrum', {
+SynthDef(\electroSnareDrumOff, {
 
-var drumosc, filterenv, drumoutput, volenv;
+	//This one uses a square wave, filtered.
+	//The filter frequency is enveloped.
+	//Think of this as the snare drum with the snare off
+	
+	var drumosc, filterenv, drumoutput, volenv;
 
-filterenv = {Line.ar(1, 0, 0.2, doneAction: 0)};
-volenv = {Line.ar(1, 0, 0.6, doneAction: 2)};
+	filterenv = {Line.ar(1, 0, 0.2, doneAction: 0)};
+	volenv = {Line.ar(1, 0, 0.6, doneAction: 2)};
 
-drumosc = {Pulse.ar(75)};
-drumoutput = {LPF.ar(drumosc,(filterenv *1000) + 30)};
+	drumosc = {Pulse.ar(75)};
+	drumoutput = {LPF.ar(drumosc,(filterenv * 1000) + 30)};
 
-Out.ar(0,
-Pan2.ar(drumoutput * volenv, 0)
+	Out.ar(0, Pan2.ar(drumoutput * volenv, 0));
+
+}).add;
 )
 
-}).send(s);
-)
-
-t = Synth('snaredrum');
+t = Synth(\electroSnareDrumOff);
 
 (
-SynthDef('snaredrum2', {
+SynthDef(\electroSnareDrum, {
 
-var drumosc, filterenv, volenv, drumoutput, snaposc, snapenv, fulloutput;
+	//Same as the previous one but with some white noise at the start
+	//to simulate the snare.
+	
+	var drumosc, filterenv, volenv, drumoutput, snaposc, snapenv, fulloutput;
 
-drumosc = {Pulse.ar(75)};
-filterenv = {Line.ar(1, 0, 0.2, doneAction: 0)};
-volenv = {Line.ar(1, 0, 0.6, doneAction: 2)};
-drumoutput = {LPF.ar(drumosc,(filterenv *1000) + 30)};
+	drumosc = {Pulse.ar(75)};
+	filterenv = {Line.ar(1, 0, 0.2, doneAction: 0)};
+	volenv = {Line.ar(1, 0, 0.6, doneAction: 2)};
+	drumoutput = {LPF.ar(drumosc,(filterenv *1000) + 30)};
 
-snaposc = {BPF.ar(HPF.ar(WhiteNoise.ar(1),500),1500)};
-snapenv = {Line.ar(1, 0, 0.2, doneAction: 0)};
+	snaposc = {BPF.ar(HPF.ar(WhiteNoise.ar(1),500),1500)};
+	snapenv = {Line.ar(1, 0, 0.2, doneAction: 0)};
 
-fulloutput = (drumoutput * volenv) + (snaposc * snapenv);
-//fulloutput = (drumoutput * volenv);
+	fulloutput = (drumoutput * volenv) + (snaposc * snapenv);
+	//fulloutput = (drumoutput * volenv);
 
-Out.ar(0,
-Pan2.ar(fulloutput, 0)
+	Out.ar(0, Pan2.ar(fulloutput, 0))
+
+}).add;
 )
 
-}).send(s);
-)
+t = Synth(\electroSnareDrum);
 
-t = Synth('snaredrum2');
+//Example beat
 
 (
 p = Pbind(
-	\instrument, \fullkickdrum,
-).play;
+	\instrument, \electroClosedHat,
+	\dur, 1/4
+).play(TempoClock.default);
+)
+
+(
+q = Pbind(
+	\instrument, \electroSnareDrum,
+	\dur, 1
+).play(TempoClock.default);
 )
 
 p.stop;
+q.stop;
