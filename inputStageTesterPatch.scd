@@ -1,6 +1,7 @@
 s.waitForBoot();
 s.quit();
 
+//TODO display level meters?
 
 (
 
@@ -9,9 +10,9 @@ s.waitForBoot({
 	//Create the input stage
 	~ajmInputStage = AjmInputStage.new();
 
-	//TODO: this seems to run too quickly when the synth def is not ready.
+	//TODO: sometimes this seems to run too quickly when the synth def is not ready.
 	//Create the synth
-	~ajmInputStage.makeSynth(0, 1, 0);
+	~ajmInputStage.makeSynth(0, 1, 1);
 });
 
 )

@@ -58,12 +58,10 @@ Each instrument, effects, loop, and control object should be a class so it can b
 
 1. Create modules for input/output
 
-	Input:
-	- GUI with stereo levels
-	- Output to buses
+	Input: Done!
 	
 	Output:
-	- GUI with levels
+	- GUI
 	- Output to stereo or mono
 	- Mix input
 	- Mix effects and instruments

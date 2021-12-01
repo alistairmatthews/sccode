@@ -41,16 +41,16 @@ AjmInputStage {
 		//This implements the MVC view
 
 		//Create the window
-		~win = Window.new("Input Stage", Rect(100, 100, 420, 140));
+		~win = Window.new("Input Stage", Rect(100, 200, 380, 110));
 
 		//Create the ViewMaker object that manages the GUI
 		viewMaker = AjmViewMaker.new(~win, this, Color.blue(0.6));
 
 		//Create the left input channel mix slider group
-		viewMaker.makeSliderGroup(\leftMix, "Left Mix:", 60, 20);
+		viewMaker.makeSliderGroup(\leftMix, "Left Mix:", 10, 20);
 
 		//Create the right input channel mix slider group
-		viewMaker.makeSliderGroup(\rightMix, "Right Mix:", 60, 40);
+		viewMaker.makeSliderGroup(\rightMix, "Right Mix:", 10, 60);
 
 		~win.onClose_({
 			//Clean up MIDI binding
@@ -108,13 +108,13 @@ AjmInputStage {
 
 	makeSynth {
 		//Create the input stage synth from the SynthDef
-		arg leftInputBus, rightInputBus, outputBus, leftVol = 0, rightVol = 1, parentGroup;
+		arg leftInputBus, rightInputBus, outputBus, parentGroup;
 		inputStageSynth = Synth(\ajsinputstage, [
-			\leftInBus, 0,
-			\rightInBus, 1,
-			\outBus, 0,
-			\leftMix, 0.5,
-			\rightMix, 0.5
+			\leftInBus, leftInputBus,
+			\rightInBus, rightInputBus,
+			\outBus, outputBus,
+			\leftMix, model.leftmix,
+			\rightMix, model.rightmix
 		], parentGroup); 
 	}
 	
