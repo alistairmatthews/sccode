@@ -4,6 +4,8 @@ s.waitForBoot({
 
 	~patchCable1 = Bus.audio(s, 1);
 
+	~patchCable1.scope;
+	
 	~ajmGranulator = AjmGranulator.new();
 	~ajmSimpleReverb = AjmSimpleReverb.new();
 
@@ -19,17 +21,13 @@ s.waitForBoot({
 	//Bind footswitch 1 to the On/Off property of the model
 	//~revMidiBinder.bindFootSwitch(1, \onOff);
 
-	postln("The buffer number for the patch cable is" + ~patchCable1);
-
-	//TODO: You've got to order these correctly in the node tree, otherwise no sound
+	//You've got to order these correctly in the node tree, otherwise no sound
 
 	~granGroup = Group.new();
-	~ajmGranulator.wireUp(0, ~granGroup);
-	~ajmGranulator.makeGranulators(~patchCable1, 20);
+	~ajmGranulator.wireUp(2, ~granGroup);
+	~ajmGranulator.makeGranulators(~patchCable1.index, 20);
 	~reverbGroup = Group.tail(s);
-	~ajmSimpleReverb.makeSynth(~patchCable1, 1, ~reverbGroup);
-	//TODO: This is causing the output to distort massively. ALl you can here are clicks
-	//TODO: make sure the two above groups get removed when you close the windows.
+	~ajmSimpleReverb.makeSynth(~patchCable1.index, 1, ~reverbGroup);
 
 });
 

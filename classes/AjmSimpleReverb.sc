@@ -108,7 +108,7 @@ AjmSimpleReverb {
 			var input, sig;
 
 			//Get the input from the specified bus, mono
-			input = SoundIn.ar(inBus, 1);
+			input = In.ar(inBus, 1);
 
 			// This line is to send stuff to o for troubleshooting
 			//SendTrig.kr(Impulse.kr(4), 0, ~modRoom.kr(1));

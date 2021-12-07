@@ -32,7 +32,7 @@ s.waitForBoot({
 	~ajmMidiBinder.bindFootSwitch(7, \rateRand, 50);
 
 	//TODO: should this wireUp call move into the class init?
-	~ajmGranulator.wireUp(0);
+	~ajmGranulator.wireUp(s.inputBus.index);
 
 	~ajmGranulator.makeGranulators(0, 20);
 

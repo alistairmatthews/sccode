@@ -140,8 +140,8 @@ AjmGranulator {
 		SynthDef.new(\micListener, {
 			arg in = 0, out = 0, amp = 1;
 			var sig;
-			//Note: with SoundIn the first audio input is always 0
-			sig = SoundIn.ar(in) * amp;
+			//Get sound from the specified input bus
+			sig = In.ar(in, 1) * amp;
 			Out.ar(out, sig);
 		}).add;
 

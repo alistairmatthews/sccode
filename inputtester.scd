@@ -27,7 +27,7 @@ SynthDef.new(\bufferRecorder,{
 	arg out=0, in=0, bufnum=0;
     //Change this to take sound from the inputs
 	var sig;
-    sig = SoundIn.ar(in);    // get some noise
+    sig = In.ar(in, 1);    // get some noise
     RecordBuf.ar(sig, bufnum);     // by default this loops
 }).add;
 )

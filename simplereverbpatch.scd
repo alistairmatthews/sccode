@@ -18,7 +18,7 @@ s.waitForBoot({
 	~ajmMidiBinder.bindExpressionPedals(\mix, \room);
 
 	//Create the synth. Read from the left and play to the right.
-	~ajmSimpleReverb.makeSynth(0, 1);
+	~ajmSimpleReverb.makeSynth(s.inputBus.index, 1);
 
 });
 
