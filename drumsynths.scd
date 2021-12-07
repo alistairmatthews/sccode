@@ -143,14 +143,14 @@ t = Synth(\electroSnareDrum);
 p = Pbind(
 	\instrument, \electroClosedHat,
 	\dur, 1/4
-).play(TempoClock.default);
+).play(TempoClock.default, quant: 1.0);
 )
 
 (
 q = Pbind(
 	\instrument, \electroSnareDrum,
-	\dur, 1
-).play(TempoClock.default);
+	\dur, 8
+).play(TempoClock.default, quant: 4.0);
 )
 
 p.stop;

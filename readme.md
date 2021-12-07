@@ -48,7 +48,9 @@ Each instrument, effects, loop, and control object should be a class so it can b
     - Midi control - Done!
     - Place the effect itself in a class so it can be reused in different patches. Done!
 
-1. Try a single patch with more than one stompbox. Does the midi bit play nicely?
+1. Try a single patch with more than one stompbox. Done!
+		Does the midi bit play nicely?
+
 1. Implement full test suite and stick to TDD principles
 
     - Note that a mocking framework may not be necessary because you're not using anything external to SC, such as databases.
@@ -62,14 +64,16 @@ Each instrument, effects, loop, and control object should be a class so it can b
 	
 	Output:
 	- GUI
-	- Output to stereo or mono
-	- Mix input
-	- Mix effects and instruments
+	- Output mono, but send it to both outputs
+	- Mix inputs from multiple busses, e.g. hardware inputs, effects, and instruments
+		Pass it a list of bus indexes, which is iterates over and adds a slider to a window for each one.
 
 1. Build some reusable synth classes
    - Additive Polysynth. Done
    - Moog thing. Done
    - Fix filter in minimoog or build it separately?
+   
+1. Work out how to sequence drums.
 
 ## General Supercollider facts
 
