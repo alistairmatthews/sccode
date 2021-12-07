@@ -12,7 +12,7 @@ s.waitForBoot({
 
 	//TODO: sometimes this seems to run too quickly when the synth def is not ready.
 	//Create the synth
-	~ajmInputStage.makeSynth(0, 1, 1);
+	~ajmInputStage.makeSynth(1);
 });
 
 )

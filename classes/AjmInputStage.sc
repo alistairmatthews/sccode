@@ -87,19 +87,20 @@ AjmInputStage {
 		//o = OSCFunc({ |msg| msg.postln }, '/tr', s.addr);
 
 		SynthDef(\ajsinputstage, {
-			arg leftInBus = 0,
-			rightInBus = 1,
-			outBus = 0,
+			arg outBus = 0,
 			leftMix = 0.5,
 			rightMix = 0.5;
 
 			var leftMixed, rightMixed;
 
-			leftMixed = SoundIn.ar(leftInBus, leftMix);
-			rightMixed = SoundIn.ar(rightInBus, rightMix);
+			// Listen to the sound inputs.
+			// Remember that passing 0 to SoundIn gets the first hardware input
+			// even though the index of that input is usually 2.
+			leftMixed = SoundIn.ar(0, leftMix);
+			rightMixed = SoundIn.ar(1, rightMix);
 
 			// This line is to send stuff to o for troubleshooting
-			//SendTrig.kr(Impulse.kr(4), 0, ~modRoom.kr(1));
+			// SendTrig.kr(Impulse.kr(4), 0, ~modRoom.kr(1));
 			
 			Out.ar(outBus, Mix.ar([leftMixed, rightMixed]));
 		}).add;
