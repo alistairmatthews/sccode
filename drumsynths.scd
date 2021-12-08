@@ -46,6 +46,33 @@ SynthDef(\clickKickDrum, {
 
 t = Synth(\clickKickDrum);
 
+(
+SynthDef(\betterKick, {
+	arg freqA = 1000, freqB = 50, freqC = 10, freqDur1 = 0.01, freqDur2 = 0.2, freqCurv1 = 1, freqCurv2 = (-1),
+	    atk = 0.01, rel = 1, curv1 = 1, curv2 = (-12), amp = 0.8, out = 0;
+	var sig, env, freqSweep;
+
+	//Set up how the frequency changes
+	freqSweep = Env([freqA, freqB, freqC], [freqDur1, freqDur2], [freqCurv1, freqCurv2]).ar;
+	//Set up the signal envelope. The .kr(2) bit makes sure the synth is freed when the env is complete
+	env = Env([0, 1, 0], [atk, rel], [curv1, curv2]).kr(2);
+	//Create the signal
+	sig = SinOsc.ar(freqSweep, pi/2);
+	//Apply the envelope
+	sig = sig * env * amp;
+	Out.ar(out, sig.dup());
+}).add;	
+)
+
+//Default freq envelope looks like this:
+Env([1000, 50, 10], [0.01, 0.2], [1, -1]).plot;
+//Default signal envelope looks like this:
+Env([0, 1, 0], [0.01, 1], [1, -12]).plot;
+
+t = Synth(\betterKick);
+t = Synth(\betterKick, [\freqA, 500, \amp, 1]);
+
+
 //High-hats
 
 (
