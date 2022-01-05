@@ -73,7 +73,9 @@ Each instrument, effects, loop, and control object should be a class so it can b
    - Moog thing. Done
    - Fix filter in minimoog or build it separately?
    
-1. Work out how to sequence drums.
+1. Drums
+   - [ ] More decent drum sounds
+   - [ ] Work out how to sequence drums.
 
 ## General Supercollider facts
 

@@ -178,7 +178,7 @@ t = Synth(\electroSnareDrum);
 
 (
 SynthDef(\betterSnare, {
-	arg out = 0, amp = 0.1, sinfreq = 180, att = 0.01, rel = 0.2, ffreq = 2000, pan = 0;
+	arg out = 0, amp = 0.1, sinfreq = 150, att = 0.01, rel = 0.2, ffreq = 800, pan = 0;
 	var env, snd1, snd2, sum;
 	env = Env.perc(att, rel, amp).kr(doneAction: 2);
 	snd1 = HPF.ar(
@@ -193,13 +193,54 @@ SynthDef(\betterSnare, {
 )
 
 h = Synth(\betterSnare);
+t = Synth(\betterSnare, [\sinfreq, 150, \ffreq, 800, \amp, 1, \rel, 0.5]);
+
+(
+SynthDef(\zaps, {
+	arg amp = 1, modFreq = 15, carFreq = 880, modDepth = 3250;
+	var car, mod, env;
+
+	env = Env.perc(releaseTime: 0.3).kr(doneAction: 2);
+	mod = Pulse.ar(freq: modFreq * [1, 1.14, 0.97, 6, 7, 8, 9, 10, 1.04, 1.2], mul: modDepth);
+	car = Pulse.ar(freq: carFreq + mod * [1, 1.41, 0.99, 2.4921, 5, 6, 1.397], mul: env);
+	car = Splay.ar(car);
+
+	Out.ar(0, FreeVerb.ar(HPF.ar(car, freq: 5274), mix: 0.05, room: 0.1, damp: 0.9, mul: amp * 0.5));
+	
+}).add;
+)
+
+i = Synth(\zaps);
+i = Synth(\zaps, [\modfreq, 10, \carfreq, 800, \amp, 1, \modDepth, 3250]);
+
+(
+SynthDef.new(\ding, {
+    arg freq = #[1600,200,177,384,730,1255,60], rel=0.5, noiseRel=0.05, noiseLevel=0.7;
+
+    var osc = Mix.arFill(7, { arg i;
+        SinOsc.ar(freq[i])*0.3;
+    });
+    var e = EnvGen.ar(Env.perc(0.01, rel), doneAction: 2);
+
+    var noiseOsc = PinkNoise.ar();
+    var noiseEnv = EnvGen.ar(Env.perc(0.01, noiseRel))*noiseLevel;
+
+    var snd =  noiseOsc * noiseEnv + osc*e;
+
+    Out.ar(0,Pan2.ar(snd))
+
+}).add;
+)
+
+x = Synth.new(\ding);
+x = Synth.new("ding", ["freq",Array.fill(7,{rrand(2000,60)}), "rel", rrand(1,0.05), "noiseRel",rrand(0.1,0), "noiseLevel", rrand(0,0.4)]);
 
 //Example beat
 
 (
 p = Pbind(
 	\instrument, \hihat,
-	\dur, Prand([1/2, 1/4, 1/4, 1/8, 1/8, 1/4, 1/4, 1/4], inf), //Pseq([1/2, 1/4, 1/4, 1/8, 1/8, 1/4, 1/4, 1/4], inf),
+	\dur, Prand([1/2, 1/4, 1/4, 1/8, 1/8, 1/4, 1/4, 1/4], inf),
 	\amp, Pseq([0.5, 0.3, 0.2, 0.2, 0.1, 0.2, 0.2, 0.05], inf),
 	\ffreq, Prand([6000, 5000, 4000, 3000, 2000, 1000], inf),
 	\rel, Prand([0.2, 1.0], inf)
@@ -217,16 +258,25 @@ q = Pbind(
 
 (
 r = Pbind(
-	\instrument, \betterSnare,
-	\dur, Pseq([1, 3, 1, 3], inf),
-	\amp, Prand([1, 0.7, 0.2, 0.4], inf),
-	\ffreq, Prand([6000, 5000, 4000, 3000, 2000, 1000], inf),
+	\instrument, \zaps,
+	\dur, Prand([1, 3, 1, 3], inf),
+	\amp, Prand([1, 0.7, 0.6, 0.4], inf),
 ).play(TempoClock.default, quant: 3.0);
 )
 
+(
+t = Pbind(
+	\instrument, \ding,
+	\dur,  Pseq([1/2, 1/4, 1/4, 1/8, 1/8, 1/4, 1/4, 1/4], inf),
+	\amp, Prand([1, 0.5, 0.6, 0.8, 0.2], inf),
+	\freq, Prand(Array.fill(7,{rrand(2000,60)}), inf),
+	\rel, Prand([1, 0.3, 0.1, 0.7], inf)
+).play(TempoClock.default, quant: 3.0);
+)
 
-p.play(quant: 4.0);
+p.play(quant: 1.0);
 p.stop;
 q.play(quant: 1.0);
 q.stop;
 r.stop;
+t.stop;
