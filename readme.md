@@ -76,6 +76,9 @@ Each instrument, effects, loop, and control object should be a class so it can b
 1. Drums
    - [ ] More decent drum sounds
    - [ ] Work out how to sequence drums.
+   - [ ] Build some sampled drum instruments. 
+   
+   - A good approach is here: https://schollz.com/blog/sampler/ Where you take a single audio file (e.g. a drum break) and split it and sequence the result. 
 
 ## General Supercollider facts
 
